@@ -21,9 +21,6 @@ module.exports = {
       jabatan: {
         type: Sequelize.STRING
       },
-      nik_karyawan: {
-        type: Sequelize.STRING
-      },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE

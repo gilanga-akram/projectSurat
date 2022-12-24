@@ -14,7 +14,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   cuti.init({
-    cuti_id: DataTypes.INTEGER,
+    cuti_id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     tanggal_mulai: DataTypes.DATE,
     tanggal_selesai: DataTypes.DATE,
     nik_karyawan: DataTypes.STRING,

@@ -9,6 +9,9 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      tipe_template_surat: {
+        type: Sequelize.STRING
+      },
       template_surat_id: {
         type: Sequelize.INTEGER
       },
@@ -36,6 +39,12 @@ module.exports = {
       alamat_pengirim: {
         type: Sequelize.STRING
       },
+      no_hp_pengirim: {
+        type: Sequelize.STRING
+      },
+      email_pengirim: {
+        type: Sequelize.STRING
+      },
       nama_penerima: {
         type: Sequelize.STRING
       },
@@ -45,23 +54,32 @@ module.exports = {
       alamat_penerima: {
         type: Sequelize.STRING
       },
+      no_hp_penerima: {
+        type: Sequelize.STRING
+      },
+      email_penerima: {
+        type: Sequelize.STRING
+      },
       tanggal_surat: {
-        type: Sequelize.DATE
+        type: Sequelize.STRING
       },
-      tanggal_cuti: {
-        type: Sequelize.DATE
+      user_id: {
+        type: Sequelize.INTEGER
       },
-      nik_karyawan: {
+      alasan_cuti: {
         type: Sequelize.STRING
       },
       jumlah_pengecekan: {
         type: Sequelize.INTEGER
       },
-      tanggal_mulai_kerjasama: {
+      tanggal_mulai: {
         type: Sequelize.DATE
       },
-      tanggal_selesai_kerjasama: {
+      tanggal_selesai: {
         type: Sequelize.DATE
+      },
+      nik_karyawan: {
+        type: Sequelize.STRING
       },
       created_at: {
         allowNull: false,

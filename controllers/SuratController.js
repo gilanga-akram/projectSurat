@@ -1,59 +1,320 @@
 const createHttpError = require('http-errors');
 const { StatusCodes } = require('http-status-codes');
 const {
-    surat,
+    surats,
+    template_surats,
+    cutis,
 } = require('../models');
+const moment = require('moment');
+moment.locale('id'); 
 
 class SuratController {
     static async createSurat(req, res, next) {
         try {
-            const { role, bagian, id } = req.UserData;
-            if (role === 'admin') throw createHttpError(StatusCodes.FORBIDDEN, 'admin cannot create surat');
-            const { no_surat, asal_surat, tgl_surat, isi, tipe, jenis, tujuan, waktu_pengiriman } = req.body;
-            if (!tipe || !jenis) throw createHttpError(StatusCodes.BAD_REQUEST, 'Tipe dan Jenis surat wajib diisi');
-            if (!no_surat || !tgl_surat) throw createHttpError(StatusCodes.BAD_REQUEST, 'nomor dan tanggal surat wajib diisi');
-            if (jenis !== 'internal' && jenis !== 'external') throw createHttpError(StatusCodes.BAD_REQUEST, 'Jenis surat salah');
-            if (jenis === 'internal') {
-                if (!asal_surat && tipe === 'surat cuti') throw createHttpError(StatusCodes.BAD_REQUEST, 'Asal surat wajib diisi');
-                if (tipe === 'disposisi' && (!tujuan || !waktu_pengiriman)) {
-                    throw createHttpError(StatusCodes.BAD_REQUEST, 'Tujuan dan Waktu pengiriman wajib diisi');
-                }
-
-                if (tipe === 'surat pemberitahuan' && (bagian !== 'Administrasi Umum' && bagian !== 'Direktur UPT Lapkesda')) {
-                    throw createHttpError(StatusCodes.FORBIDDEN, 'bukan bagian anda');
-                } else if (tipe === 'surat cuti' && bagian !== 'Staff') {
-                    throw createHttpError(StatusCodes.FORBIDDEN, 'bukan bagian anda');
-                } else if (tipe === 'disposisi' && bagian !== 'Kepala Subbag Tata Usaha') {
-                    throw createHttpError(StatusCodes.FORBIDDEN, 'bukan bagian anda');
-                } else {
-                    throw createHttpError(StatusCodes.BAD_REQUEST, 'Tipe Surat Salah');
-                }
-            } else if (jenis === 'external') {
-                if (!asal_surat && tipe === 'cek kesehatan') throw createHttpError(StatusCodes.BAD_REQUEST, 'Asal surat wajib diisi');
-                
-                if (tipe === 'cek kesehatan' && (bagian !== 'Administrasi Umum' && bagian !== 'Direktur UPT Lapkesda')) {
-                    throw createHttpError(StatusCodes.FORBIDDEN, 'bukan bagian anda');
-                } else {
-                    throw createHttpError(StatusCodes.BAD_REQUEST, 'Tipe Surat Salah');
-                }
+            const {
+                tipe_template_surat,
+                is_important,
+                deadline,
+                nama_pengirim,
+                jabatan_pengirim,
+                alamat_pengirim,
+                no_hp_pengirim,
+                email_pengirim,
+                nama_penerima,
+                jabatan_penerima,
+                alamat_penerima,
+                no_hp_penerima,
+                email_penerima,
+                alasan_cuti,
+                tanggal_surat,
+                jumlah_pengecekan,
+                tanggal_mulai,
+                tanggal_selesai,
+                nik_karyawan,
+            } = req.body;
+            if (!tanggal_surat) throw createHttpError(StatusCodes.BAD_REQUEST, 'Tanggal Surat is Required');
+            if (is_important === undefined || is_important === null) throw createHttpError(StatusCodes.BAD_REQUEST, 'is_important is required');
+            if ((is_important === true || is_important === 'true') && !deadline) {
+                throw createHttpError(StatusCodes.BAD_REQUEST, 'Deadline required');
             }
+            let result = {};
+            if (tipe_template_surat === 'magang') {
+                if (req.UserData.jabatan !== 'staff_surat_masuk') {
+                    throw createHttpError(StatusCodes.UNAUTHORIZED, 'User do not have access');
+                }
+                const templateSurat = await template_surats.findOne({
+                    where: {
+                        tipe_surat: tipe_template_surat,
+                    },
+                });
+                if (!templateSurat) throw createHttpError(StatusCodes.BAD_REQUEST, 'Tipe Template Surat Tidak Ada');
+                if (!nama_pengirim,
+                    !alamat_pengirim,
+                    !no_hp_pengirim,
+                    !email_pengirim,
+                    !tanggal_mulai,
+                    !tanggal_selesai,
+                    !nama_penerima,
+                    !alamat_penerima) {
+                        throw createHttpError(StatusCodes.BAD_REQUEST, 'Required All Fields');
+                    }
+                result = await surats.create({
+                    nama_pengirim: nama_pengirim,
+                    alamat_pengirim: alamat_pengirim,
+                    no_hp_pengirim: no_hp_pengirim,
+                    email_pengirim: email_pengirim,
+                    tanggal_mulai: tanggal_mulai,
+                    tanggal_selesai: tanggal_selesai,
+                    nama_penerima: nama_penerima,
+                    alamat_penerima: alamat_penerima,
+                    user_id: req.UserData.user_id,
+                    status_surat: 'dibuat',
+                    tipe_template_surat: tipe_template_surat,
+                    is_important: is_important,
+                    tipe_surat: 'masuk',
+                    jenis_surat: 'external',
+                    deadline: deadline,
+                    template_surat_id: templateSurat.template_surat_id,
+                    tanggal_surat: tanggal_surat,
+                });
+            } else if (tipe_template_surat === 'cuti') {
+                if (req.UserData.jabatan !== 'staff_surat_keluar') {
+                    throw createHttpError(StatusCodes.UNAUTHORIZED, 'User do not have access');
+                }
+                const templateSurat = await template_surats.findOne({
+                    where: {
+                        tipe_surat: tipe_template_surat,
+                    },
+                });
+                if (!templateSurat) throw createHttpError(StatusCodes.BAD_REQUEST, 'Tipe Template Surat Tidak Ada');
+                if (!nama_pengirim,
+                    !jabatan_pengirim,
+                    !alamat_pengirim,
+                    !no_hp_pengirim,
+                    !email_pengirim,
+                    !tanggal_mulai,
+                    !tanggal_selesai,
+                    !nama_penerima,
+                    !alamat_penerima,
+                    !jabatan_penerima,
+                    !alasan_cuti,
+                    !nik_karyawan) {
+                        throw createHttpError(StatusCodes.BAD_REQUEST, 'Required All Fields');
+                    }
 
-            await surat.create({
-                id_user: id,
-                no_surat: no_surat,
-                asal_surat: asal_surat,
-                tgl_surat: tgl_surat,
-                isi: isi,
-                status: 'PUBLISHED',
-                tipe: tipe,
-                jenis: jenis,
-            });
-            res.status(StatusCodes.CREATED).json({ msg: 'Success' });
+                const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+                const firstDate = tanggal_mulai;
+                const secondDate = tanggal_selesai;
+                const diffDays = Math.round(Math.abs((firstDate - secondDate) / oneDay));
+                const dataCuti = await cutis.findAll({
+                    where: {
+                        nik_karyawan: nik_karyawan,
+                    }
+                });
+                if (dataCuti) {
+                    const sumCuti = dataCuti.map(data => data.jumlah_hari).reduce((partialSum, a) => partialSum + a, 0);
+                    if (sumCuti >= 10) {
+                        throw createHttpError(StatusCodes.BAD_REQUEST, 'Jatah Cuti Sudah Habis');
+                    }
+                }
+                result = await surats.create({
+                    nama_pengirim: nama_pengirim,
+                    jabatan_pengirim: jabatan_pengirim,
+                    alamat_pengirim: alamat_pengirim,
+                    no_hp_pengirim: no_hp_pengirim,
+                    email_pengirim: email_pengirim,
+                    tanggal_mulai: tanggal_mulai,
+                    tanggal_selesai: tanggal_selesai,
+                    nama_penerima: nama_penerima,
+                    alamat_penerima: alamat_penerima,
+                    jabatan_penerima: jabatan_penerima,
+                    alasan_cuti: alasan_cuti,
+                    user_id: req.UserData.user_id,
+                    status_surat: 'dibuat',
+                    tipe_template_surat: tipe_template_surat,
+                    is_important: is_important,
+                    tipe_surat: 'keluar',
+                    jenis_surat: 'internal',
+                    deadline: deadline,
+                    template_surat_id: templateSurat.template_surat_id,
+                    tanggal_surat: tanggal_surat,
+                    nik_karyawan: nik_karyawan,
+                });
+            } else {
+                throw createHttpError(StatusCodes.BAD_REQUEST, 'Tipe Template Surat Tidak Ada');
+            }
+            res.status(StatusCodes.CREATED).json({ msg: 'Success', dataSurat: result });
         } catch (err) {
             next(err);
         }
     }
 
+    static async getSingleSurat(req, res, next) {
+        try {
+            const suratId = req.params.suratId;
+            const dataSurat = await surats.findOne({
+                where: {
+                    surat_id: suratId,
+                },
+                include: [{
+                    model: template_surats,
+                    required: true,
+                }],
+            });
+            if (!dataSurat) throw createHttpError(StatusCodes.NOT_FOUND, 'Surat not found');
+            const changeWord = {
+                "{nama_pengirim}": dataSurat.nama_pengirim,
+                "{jabatan_pengirim}": dataSurat.jabatan_pengirim,
+                "{alamat_pengirim}": dataSurat.alamat_pengirim,
+                "{no_hp_pengirim}": dataSurat.no_hp_pengirim,
+                "{email_pengirim}": dataSurat.email_pengirim,
+                "{tanggal_mulai}": moment(dataSurat.tanggal_mulai).format('LL'),
+                "{tanggal_selesai}": moment(dataSurat.tanggal_selesai).format('LL'),
+                "{nama_penerima}": dataSurat.nama_penerima,
+                "{jabatan_penerima}": dataSurat.jabatan_penerima,
+                "{alamat_penerima}": dataSurat.alamat_penerima,
+                "{tanggal_surat}": dataSurat.tanggal_surat,
+                "{alasan_cuti}": dataSurat.alasan_cuti,
+                "{nik_karyawan}": dataSurat.nik_karyawan,
+            }
+            const newTemplateSurat = dataSurat.template_surat.isi_surat.replace(/{nama_pengirim}|{jabatan_pengirim}|{alamat_pengirim}|{no_hp_pengirim}|{email_pengirim}|{tanggal_mulai}|{tanggal_selesai}|{nama_penerima}|{jabatan_penerima}|{alamat_penerima}|{tanggal_surat}|{alasan_cuti}|{nik_karyawan}/gi, function(matched){
+                return changeWord[matched];
+            });
+            res.status(StatusCodes.OK).json({
+                msg: 'Success',
+                isiSurat: newTemplateSurat,
+                rawDataSurat: dataSurat,
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async getAllSurat(req, res, next) {
+        try {
+            let {
+                tipe_template_surat,
+                page,
+                resPerPage,
+                tipe_surat,
+                jenis_surat,
+                is_important,
+                status_surat,
+            } = req.query;
+            if (!page || page < 1) page = 1;
+            if (!resPerPage) resPerPage = 10;
+            const offset = resPerPage * page - resPerPage;
+            let query = {
+                where: {},
+            };
+            if (tipe_template_surat) {
+                query.where.tipe_template_surat = tipe_template_surat;
+            }
+            if (tipe_surat) {
+                query.where.tipe_surat = tipe_surat;
+            }
+            if (jenis_surat) {
+                query.where.jenis_surat = jenis_surat;
+            }
+            if (is_important) {
+                query.where.is_important = is_important;
+            }
+            if (status_surat) {
+                query.where.status_surat = status_surat;
+            }
+            const numOfResult = await surats.count(query);
+            query.limit = resPerPage;
+            query.offset = offset;
+            const allDataSurat = await surats.findAll(query);
+            res.status(200).json({
+                msg: 'Success',
+                allDataSurat: allDataSurat,
+                pages: Math.ceil(numOfResult / resPerPage),
+                currentPage: Number(page),
+                numOfResult,
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async changeStatusSurat(req, res, next) {
+        try {
+            const suratId = req.params.suratId;
+            const { status_surat } = req.body;
+            if (status_surat !== 'disetujui' && status_surat !== 'ditolak') {
+                throw createHttpError(StatusCodes.BAD_REQUEST, 'Status Surat invalid')
+            }
+            const dataSurat = await surats.findOne({
+                where: {
+                    surat_id: suratId,
+                    status_surat: 'dibuat',
+                },
+                include: [{
+                    model: template_surats,
+                    required: true,
+                }],
+            });
+            if (!dataSurat) throw createHttpError(StatusCodes.NOT_FOUND, 'Surat not found');
+            await surats.update({
+                status_surat: status_surat,     
+            }, {
+                where: {
+                    surat_id: dataSurat.surat_id,
+                }
+            });
+            if (dataSurat.tipe_template_surat === 'cuti' && status_surat === 'disetujui') {
+                const dataCuti = await cutis.findAll({
+                    where: {
+                        nik_karyawan: dataSurat.nik_karyawan,
+                    }
+                });
+                if (dataCuti) {
+                    const sumCuti = dataCuti.map(data => data.jumlah_hari).reduce((partialSum, a) => partialSum + a, 0);
+                    if (sumCuti >= 10) {
+                        throw createHttpError(StatusCodes.BAD_REQUEST, 'Jatah Cuti Sudah Habis');
+                    }
+                }
+                const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+                const firstDate = dataSurat.tanggal_mulai;
+                const secondDate = dataSurat.tanggal_selesai;
+                const diffDays = Math.round(Math.abs((firstDate - secondDate) / oneDay)) + 1;
+                await cutis.create({
+                    tanggal_mulai: dataSurat.tanggal_mulai,
+                    tanggal_selesai: dataSurat.tanggal_selesai,
+                    nik_karyawan: dataSurat.nik_karyawan,
+                    jumlah_hari: diffDays,
+                });
+            }
+            res.status(StatusCodes.OK).json({
+                msg: 'Success',
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async deleteSurat(req, res, next) {
+        try {
+            const suratId = req.params.suratId;
+            const dataSurat = await surats.findOne({
+                where: {
+                    surat_id: suratId,
+                },
+            });
+            if (!dataSurat) throw createHttpError(StatusCodes.NOT_FOUND, 'Surat not found');
+            await surats.destroy({
+                where: {
+                    surat_id: dataSurat.surat_id,
+                },
+            });
+            res.status(StatusCodes.OK).json({
+                msg: 'Success',
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
 };
 
 module.exports = SuratController;

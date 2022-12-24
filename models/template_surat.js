@@ -11,13 +11,17 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      template_surat.hasMany(models.surats, { foreignKey: 'template_surat_id' });
     }
   }
   template_surat.init({
-    template_surat_id: DataTypes.INTEGER,
+    template_surat_id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     tipe_surat: DataTypes.STRING,
     isi_surat: DataTypes.TEXT,
-    user_id: DataTypes.INTEGER,
     created_at: DataTypes.DATE,
     updated_at: DataTypes.DATE,
   }, {

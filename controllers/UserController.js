@@ -29,8 +29,8 @@ class UserController {
 			if (req.UserData.jabatan !== 'admin') {
 				throw createError(StatusCodes.UNAUTHORIZED, 'must be an admin');
 			}
-			const { username, fullname, jabatan, nik_karyawan } = req.body;
-			if (!username || !fullname || !jabatan || !nik_karyawan) throw createError(StatusCodes.BAD_REQUEST, "Fill in all required fields");
+			const { username, fullname, jabatan } = req.body;
+			if (!username || !fullname || !jabatan ) throw createError(StatusCodes.BAD_REQUEST, "Fill in all required fields");
 			const userValidation = await users.findOne({ where: { username } });
 			if (userValidation) throw createError(StatusCodes.BAD_REQUEST, "Username Already Taken");
 			await users.create({
@@ -38,7 +38,6 @@ class UserController {
 				username: username,
 				password: hashPassword('123456'),
 				jabatan: jabatan,
-				nik_karyawan: nik_karyawan,
 			});
 			res.status(StatusCodes.CREATED).json({ msg: 'Success' });
 		} catch (err) {
