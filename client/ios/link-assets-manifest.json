@@ -1,0 +1,37 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/addUser.png",
+      "sha1": "f173f521e07ec6faf257f2f2447dcc66f2c7eacf"
+    },
+    {
+      "path": "src/assets/employee.png",
+      "sha1": "2f8acf527d62a9d7fc149abfa3b2609b6cc143b1"
+    },
+    {
+      "path": "src/assets/findStuff.png",
+      "sha1": "cbea1d7c28689870db0484744894ce0988cd70a4"
+    },
+    {
+      "path": "src/assets/findUser.png",
+      "sha1": "2bb25b727ff0446448ad97ed910145212d3798b2"
+    },
+    {
+      "path": "src/assets/index.js",
+      "sha1": "7135a48cdbb515e78a2742678ca870d898b99882"
+    },
+    {
+      "path": "src/assets/leftArrow.png",
+      "sha1": "9f4c1225fb3fca46efe672d8cc6e3a818d22423a"
+    },
+    {
+      "path": "src/assets/logout.png",
+      "sha1": "8e31bf7d9d8c345ad0db7d5a50166fe806a17aa7"
+    },
+    {
+      "path": "src/assets/scan.png",
+      "sha1": "16d49bf111a9215f935169ad5192b949e7be2f03"
+    }
+  ]
+}

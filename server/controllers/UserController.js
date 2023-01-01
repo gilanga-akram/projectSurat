@@ -46,15 +46,25 @@ class UserController {
 	}
 	static async listUser(req, res, next) {
 		try {
+			const { search } = req.query;
 			if (req.UserData.jabatan !== 'admin') {
 				throw createError(StatusCodes.UNAUTHORIZED, 'must be an admin');
 			}
-    		const userData = await users.findAll({
-				where: {
-					jabatan: {
-						[Op.ne]: 'admin',
-					}
+			const where = {
+				jabatan: {
+					[Op.ne]: 'admin',
 				}
+			};
+			if (search) {
+				Object.assign(where, {
+					[Op.or]: [
+						{ username: { [Op.iLike]: `%${search}%` } },
+						{ fullname: { [Op.iLike]: `%${search}%` } }
+					]
+				})
+			}
+    		const userData = await users.findAll({
+				where: where,
 			});
       		res.status(StatusCodes.OK).json({
 				data: userData,
@@ -91,7 +101,7 @@ class UserController {
 	}
 	static async editUser(req, res, next) {
 		try {
-			const { fullname, jabatan } = req.body;
+			const { fullname } = req.body;
 			if (req.UserData.jabatan !== 'admin') {
 				throw createError(StatusCodes.UNAUTHORIZED, 'must be an admin');
 			}
@@ -106,7 +116,6 @@ class UserController {
 			}
 			const updateQuery = {};
 			if (fullname) Object.assign(updateQuery, { fullname: fullname });
-			if (jabatan) Object.assign(updateQuery, { jabatan: jabatan });
 			await users.update(updateQuery, {
 				where: {
 					user_id: req.params.id,
@@ -147,9 +156,10 @@ class UserController {
 	}
 	static async resetPassword(req, res, next) {
 		try {
+			const { id } = req.params;
       		const userData = await users.findOne({
 				where: {
-					user_id: req.UserData.user_id,
+					user_id: id,
 				},
 			});
 			if (userData.jabatan === 'admin') {
@@ -159,7 +169,34 @@ class UserController {
 				password: hashPassword('123456')
 			}, {
 				where: {
-					user_id: req.UserData.user_id,
+					user_id: id,
+				}
+			});
+      		res.status(StatusCodes.OK).json({
+				msg: 'Success',
+			});
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	static async forgotPassword(req, res, next) {
+		try {
+			const { username } = req.params;
+      		const userData = await users.findOne({
+				where: {
+					username: username,
+				},
+			});
+			if (!userData) throw createError(StatusCodes.NOT_FOUND, 'user not found');
+			if (userData.jabatan === 'admin') {
+				throw createError(StatusCodes.UNAUTHORIZED, 'role admin cant be edited');
+			}
+			await users.update({
+				password: hashPassword('123456')
+			}, {
+				where: {
+					user_id: userData.user_id,
 				}
 			});
       		res.status(StatusCodes.OK).json({

@@ -8,6 +8,7 @@ router.get('/list', authentication, UserController.listUser);
 router.delete('/delete/:id', authentication, UserController.deleteUser);
 router.put('/edit/:id', authentication, UserController.editUser);
 router.put('/change-password', authentication, UserController.changePassword);
-router.get('/reset-password', authentication, UserController.resetPassword);
+router.put('/reset-password/:id', UserController.resetPassword);
+router.get('/forgot-password/:username', UserController.forgotPassword);
 
 module.exports = router;
