@@ -3,7 +3,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Home from './src/screens/HomeScreen';
 import Login from './src/screens/LoginScreen';
-import Search from './src/screens/SearchScreen';
+import SuratMasuk from './src/screens/SuratMasukScreen';
 import SearchUser from './src/screens/SearchUserScreen';
 import Register from './src/screens/RegisterScreen';
 import SplashScreen from './src/screens/SplashScreen';
@@ -127,8 +127,8 @@ const App = ({navigation}) => {
                 options={{title: null, headerShown: false}}
               />
               <Stack.Screen
-                name="Search"
-                component={Search}
+                name="SuratMasuk"
+                component={SuratMasuk}
                 options={{title: null, headerShown: false}}
               />
               <Stack.Screen

@@ -113,7 +113,7 @@ const Home = ({navigation}) => {
                     marginTop: 20,
                     flexDirection: 'row',
                   }}
-                  onPress={() => navigation.navigate('Search')}
+                  onPress={() => navigation.navigate('SuratMasuk')}
                 >
                   <Image source={findStuff} style={{width: 100, height: 100}} />
                   <Text
@@ -168,7 +168,7 @@ const Home = ({navigation}) => {
                     marginTop: 20,
                     flexDirection: 'row',
                   }}
-                  onPress={() => navigation.navigate('Search')}
+                  onPress={() => navigation.navigate('SuratMasuk')}
                 >
                   <Image source={findStuff} style={{width: 100, height: 100}} />
                   <Text

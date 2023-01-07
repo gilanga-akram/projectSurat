@@ -207,6 +207,11 @@ class SuratController {
             let query = {
                 where: {},
             };
+            if (req.UserData.jabatan === 'direktur_surat_masuk' || req.UserData.jabatan === 'staff_surat_masuk') {
+                query.where.tipe_surat = 'masuk';
+            } else if (req.UserData.jabatan === 'direktur_surat_keluar' || req.UserData.jabatan === 'staff_surat_keluar') {
+                query.where.tipe_surat = 'keluar';
+            }
             if (tipe_template_surat) {
                 query.where.tipe_template_surat = tipe_template_surat;
             }
