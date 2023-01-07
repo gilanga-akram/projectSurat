@@ -11,7 +11,7 @@ import {
   Pressable,
   ScrollView,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { leftArrow } from '../assets';
 import axios from 'axios';
 import host from '../utilities/host';
@@ -28,7 +28,6 @@ const SuratMasukScreen = ({ navigation }) => {
   const [modalVisibleSetujuiSurat, setModalVisibleSetujuiSurat] = useState(false);
   const [modalVisibleConfirmationDeleteSurat, setModalVisibleConfirmationDeleteSurat] = useState(false);
   const [modalVisibleMenolakSurat, setModalVisibleMenolakSurat] = useState(false);
-  const [dataSurat, setDataSurat] = useState([]);
   const [dataSuratSingle, setDataSuratSingle] = useState('');
   const [suratModal, setSuratModal] = useState({});
   const [suratId, setSuratId] = useState(0);
@@ -42,10 +41,16 @@ const SuratMasukScreen = ({ navigation }) => {
   const [statusSurat, setStatusSurat] = useState('');
   const [sifatSuratDropdown, setSifatSuratDropdown] = useState(['Penting', 'Tidak Penting']);
   const [sifatSurat, setSifatSurat] = useState('');
+  const dropdownRefTipe = useRef({});
+  const dropdownRefStatus = useRef({});
+  const dropdownRefSifat = useRef({});
 
   useEffect(() => {
     handleApi();
     setTokenData();
+    dropdownRefTipe.current.reset();
+    dropdownRefStatus.current.reset();
+    dropdownRefSifat.current.reset();
   }, []);
 
   const setTokenData = async () => {
@@ -63,7 +68,6 @@ const SuratMasukScreen = ({ navigation }) => {
         url: `${host}/surat/all`,
         headers: { token },
       });
-      setDataSurat(data.allDataSurat);
       renderTableData(data);
     } catch (error) {
       console.log(error);
@@ -111,17 +115,23 @@ const SuratMasukScreen = ({ navigation }) => {
       if (sifatSurat) search.push(`is_important=${sifatSurat}`);
       if (search.length) search = search.join('&');
       else search = '';
-      console.log(search);
       const token = await AsyncStorage.getItem('userToken');
       const { data } = await axios({
         method: 'GET',
-        url: `${host}/sural/all?${search}`,
+        url: `${host}/surat/all?${search}`,
         headers: { token },
       });
-      setDataSurat(data.allDataSurat);
+      renderTableData(data);
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleSearchReset = async () => {
+    dropdownRefTipe.current.reset();
+    dropdownRefStatus.current.reset();
+    dropdownRefSifat.current.reset();
+    handleApi();
   };
 
   const handleModal = async surat => {
@@ -129,7 +139,6 @@ const SuratMasukScreen = ({ navigation }) => {
     setSuratModal(surat);
     setModalVisible(true)
     setSuratId(surat.surat_id);
-
   };
 
   const handleConfirmationDeleteSurat = async () => {
@@ -194,237 +203,251 @@ const SuratMasukScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView>
-      <View style={{ marginLeft: 16 }}>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisibleSetujuiSurat}
-        onRequestClose={() => {
-          setModalVisibleSetujuiSurat(false);
-        }}
-      >
-        <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>Apakah Anda Yakin Ingin Menyutujui Surat?</Text>
-              <View style={{flexDirection: 'row'}}>
-                <Pressable
-                  style={[styles.button, styles.confimButton]}
-                  onPress={() => handleChangeStatusConfirmation('disetujui')}
-                >
-                  <Text style={styles.textStyle}>Ya</Text>
-                </Pressable>
-                <Pressable
-                  style={[styles.button, { backgroundColor: 'orange', }]}
-                  onPress={() => handleCloseModal()}
-                >
-                  <Text style={styles.textStyle}>Tidak</Text>
-                </Pressable>
-              </View>
-            </View>
-          </View>
-      </Modal>
-
-      <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisibleMenolakSurat}
-          onRequestClose={() => {
-            setModalVisibleMenolakSurat(false);
-          }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>Apakah Anda Yakin Ingin Menolak Surat?</Text>
-              <View style={{flexDirection: 'row'}}>
-                <Pressable
-                  style={[styles.button, styles.confimButton]}
-                  onPress={() => handleChangeStatusConfirmation('ditolak')}
-                >
-                  <Text style={styles.textStyle}>Ya</Text>
-                </Pressable>
-                <Pressable
-                  style={[styles.button, { backgroundColor: 'orange', }]}
-                  onPress={() => handleCloseModal()}
-                >
-                  <Text style={styles.textStyle}>Tidak</Text>
-                </Pressable>
-              </View>
-            </View>
-          </View>
-        </Modal>
-
+      <ScrollView>
+        <View style={{ marginLeft: 16 }}>
         <Modal
           animationType="slide"
           transparent={true}
-          visible={modalVisibleConfirmationDeleteSurat}
+          visible={modalVisibleSetujuiSurat}
           onRequestClose={() => {
-            setModalVisibleConfirmationDeleteSurat(false);
+            setModalVisibleSetujuiSurat(false);
           }}
         >
           <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>Apakah Anda Yakin Ingin Delete Surat?</Text>
-              <View style={{flexDirection: 'row'}}>
-                <Pressable
-                  style={[styles.button, styles.confimButton]}
-                  onPress={() => handleConfirmationDeleteSurat()}
-                >
-                  <Text style={styles.textStyle}>Ya</Text>
-                </Pressable>
-                <Pressable
-                  style={[styles.button, { backgroundColor: 'orange', }]}
-                  onPress={() => handleCloseModal()}
-                >
-                  <Text style={styles.textStyle}>Tidak</Text>
-                </Pressable>
-              </View>
-            </View>
-          </View>
-        </Modal>
-
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            setModalVisible(false);
-          }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <ScrollView>
-                <Text style={styles.modalText}>Tanggal Surat: </Text>
-                <Text style={{...styles.modalText, fontWeight: 'bold'}}>{suratModal?.tanggal_surat} </Text>
-                <Text style={styles.modalText}>Status Surat: </Text>
-                <Text style={{...styles.modalText, fontWeight: 'bold'}}>{toTitleCase(suratModal.status_surat)} </Text>
-                <Text style={styles.modalText}>Tipe Surat: </Text>
-                <Text style={{...styles.modalText, fontWeight: 'bold'}}>{toTitleCase(suratModal.tipe_template_surat)} </Text>
-                <Text style={styles.modalText}>Sifat Surat: </Text>
-                <Text style={{...styles.modalText, fontWeight: 'bold'}}>{toTitleCase(suratModal.is_important ? 'Penting' : 'Tidak Penting')} </Text>
-                <Text style={styles.modalText}>Nama Pengirim:  </Text>
-                <Text style={{...styles.modalText, fontWeight: 'bold'}}>{suratModal?.nama_pengirim} </Text>
-                <Text style={styles.modalText}>Nama Penerima:  </Text>
-                <Text style={{...styles.modalText, fontWeight: 'bold'}}>{suratModal?.nama_penerima} </Text>
-                <Text style={styles.modalText}>Isi Surat:</Text>
-                <RenderHtml
-                  contentWidth={width}
-                  source={{ html: dataSuratSingle }}
-                />
-                <Text style={styles.modalText}>Action Surat:</Text>
-                {
-                  suratModal.status_surat !== 'dibuat' ? <></> : 
-                  <View style={{flexDirection: 'row', marginTop: 15}}>
-                    <Pressable
-                      style={[styles.button, styles.buttonClose, { backgroundColor: 'red', }]}
-                      onPress={() => handleModalConfirmation('deleteSurat')}
-                    >
-                      <Text style={styles.textStyle}>Delete Surat</Text>
-                    </Pressable>
-                  </View>
-                }
-                {
-                  (role === 'direktur_surat_masuk' || role === 'direktur_surat_keluar') && suratModal.status_surat !== 'dibuat' ? <></> : 
-                  <>
-                    <View style={{flexDirection: 'row', marginTop: 15}}>
-                      <Pressable
-                        style={[styles.button, styles.buttonClose, { backgroundColor: 'green', }]}
-                        onPress={() => handleModalConfirmation('setujuiSurat')}
-                      >
-                        <Text style={styles.textStyle}>Setujui</Text>
-                      </Pressable>
-                    </View>
-                    <View style={{flexDirection: 'row', marginTop: 15}}>
-                      <Pressable
-                        style={[styles.button, styles.buttonClose, { backgroundColor: 'orange', }]}
-                        onPress={() => handleModalConfirmation('tolakSurat')}
-                      >
-                        <Text style={styles.textStyle}>Tolak</Text>
-                      </Pressable>
-                    </View>
-                  </>
-                }
-                <View style={{flexDirection: 'row', marginTop: 15}}>
+              <View style={styles.modalView}>
+                <Text style={styles.modalText}>Apakah Anda Yakin Ingin Menyutujui Surat?</Text>
+                <View style={{flexDirection: 'row'}}>
                   <Pressable
-                    style={[styles.button, styles.buttonClose, { backgroundColor: 'blue', }]}
+                    style={[styles.button, styles.confimButton]}
+                    onPress={() => handleChangeStatusConfirmation('disetujui')}
+                  >
+                    <Text style={styles.textStyle}>Ya</Text>
+                  </Pressable>
+                  <Pressable
+                    style={[styles.button, { backgroundColor: 'orange', }]}
                     onPress={() => handleCloseModal()}
                   >
-                    <Text style={styles.textStyle}>Cancel</Text>
+                    <Text style={styles.textStyle}>Tidak</Text>
                   </Pressable>
                 </View>
-              </ScrollView>
+              </View>
             </View>
-          </View>
         </Modal>
-        <View
-          style={{
-            position: 'relative',
-            justifyContent: 'center',
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginTop: 16,
-            marginBottom: 16,
-          }}
-        >
-          <TouchableOpacity
+
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisibleMenolakSurat}
+            onRequestClose={() => {
+              setModalVisibleMenolakSurat(false);
+            }}
+          >
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <Text style={styles.modalText}>Apakah Anda Yakin Ingin Menolak Surat?</Text>
+                <View style={{flexDirection: 'row'}}>
+                  <Pressable
+                    style={[styles.button, styles.confimButton]}
+                    onPress={() => handleChangeStatusConfirmation('ditolak')}
+                  >
+                    <Text style={styles.textStyle}>Ya</Text>
+                  </Pressable>
+                  <Pressable
+                    style={[styles.button, { backgroundColor: 'orange', }]}
+                    onPress={() => handleCloseModal()}
+                  >
+                    <Text style={styles.textStyle}>Tidak</Text>
+                  </Pressable>
+                </View>
+              </View>
+            </View>
+          </Modal>
+
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisibleConfirmationDeleteSurat}
+            onRequestClose={() => {
+              setModalVisibleConfirmationDeleteSurat(false);
+            }}
+          >
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <Text style={styles.modalText}>Apakah Anda Yakin Ingin Delete Surat?</Text>
+                <View style={{flexDirection: 'row'}}>
+                  <Pressable
+                    style={[styles.button, styles.confimButton]}
+                    onPress={() => handleConfirmationDeleteSurat()}
+                  >
+                    <Text style={styles.textStyle}>Ya</Text>
+                  </Pressable>
+                  <Pressable
+                    style={[styles.button, { backgroundColor: 'orange', }]}
+                    onPress={() => handleCloseModal()}
+                  >
+                    <Text style={styles.textStyle}>Tidak</Text>
+                  </Pressable>
+                </View>
+              </View>
+            </View>
+          </Modal>
+
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              setModalVisible(false);
+            }}
+          >
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <ScrollView>
+                  <Text style={styles.modalText}>Tanggal Surat: </Text>
+                  <Text style={{...styles.modalText, fontWeight: 'bold'}}>{suratModal?.tanggal_surat} </Text>
+                  <Text style={styles.modalText}>Status Surat: </Text>
+                  <Text style={{...styles.modalText, fontWeight: 'bold'}}>{toTitleCase(suratModal.status_surat)} </Text>
+                  <Text style={styles.modalText}>Tipe Surat: </Text>
+                  <Text style={{...styles.modalText, fontWeight: 'bold'}}>{toTitleCase(suratModal.tipe_template_surat)} </Text>
+                  <Text style={styles.modalText}>Sifat Surat: </Text>
+                  <Text style={{...styles.modalText, fontWeight: 'bold'}}>{toTitleCase(suratModal.is_important ? 'Penting' : 'Tidak Penting')} </Text>
+                  <Text style={styles.modalText}>Nama Pengirim:  </Text>
+                  <Text style={{...styles.modalText, fontWeight: 'bold'}}>{suratModal?.nama_pengirim} </Text>
+                  <Text style={styles.modalText}>Nama Penerima:  </Text>
+                  <Text style={{...styles.modalText, fontWeight: 'bold'}}>{suratModal?.nama_penerima} </Text>
+                  <Text style={styles.modalText}>Isi Surat:</Text>
+                  <RenderHtml
+                    contentWidth={width}
+                    source={{ html: dataSuratSingle }}
+                  />
+                  <Text style={styles.modalText}>Action Surat:</Text>
+                  {
+                    suratModal.status_surat !== 'dibuat' ? <></> : 
+                    <View style={{flexDirection: 'row', marginTop: 15}}>
+                      <Pressable
+                        style={[styles.button, styles.buttonClose, { backgroundColor: 'red', }]}
+                        onPress={() => handleModalConfirmation('deleteSurat')}
+                      >
+                        <Text style={styles.textStyle}>Delete Surat</Text>
+                      </Pressable>
+                    </View>
+                  }
+                  {
+                    (role === 'direktur_surat_masuk' || role === 'direktur_surat_keluar') && suratModal.status_surat !== 'dibuat' ? <></> : 
+                    <>
+                      <View style={{flexDirection: 'row', marginTop: 15}}>
+                        <Pressable
+                          style={[styles.button, styles.buttonClose, { backgroundColor: 'green', }]}
+                          onPress={() => handleModalConfirmation('setujuiSurat')}
+                        >
+                          <Text style={styles.textStyle}>Setujui</Text>
+                        </Pressable>
+                      </View>
+                      <View style={{flexDirection: 'row', marginTop: 15}}>
+                        <Pressable
+                          style={[styles.button, styles.buttonClose, { backgroundColor: 'orange', }]}
+                          onPress={() => handleModalConfirmation('tolakSurat')}
+                        >
+                          <Text style={styles.textStyle}>Tolak</Text>
+                        </Pressable>
+                      </View>
+                    </>
+                  }
+                  <View style={{flexDirection: 'row', marginTop: 15}}>
+                    <Pressable
+                      style={[styles.button, styles.buttonClose, { backgroundColor: 'blue', }]}
+                      onPress={() => handleCloseModal()}
+                    >
+                      <Text style={styles.textStyle}>Cancel</Text>
+                    </Pressable>
+                  </View>
+                </ScrollView>
+              </View>
+            </View>
+          </Modal>
+          <View
             style={{
+              position: 'relative',
+              justifyContent: 'center',
               flexDirection: 'row',
               alignItems: 'center',
-              position: 'absolute',
-              left: 16,
+              marginTop: 16,
+              marginBottom: 16,
             }}
-            onPress={() => navigation.goBack()}
           >
-            <Image source={leftArrow} />
-          </TouchableOpacity>
-          <View>
-            <Text style={{ fontWeight: '700', fontSize: 20, color: '#3AB4F2' }}>
-              Menu List Surat
-            </Text>
+            <TouchableOpacity
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                position: 'absolute',
+                left: 16,
+              }}
+              onPress={() => navigation.goBack()}
+            >
+              <Image source={leftArrow} />
+            </TouchableOpacity>
+            <View>
+              <Text style={{ fontWeight: '700', fontSize: 20, color: '#3AB4F2' }}>
+                Menu List Surat
+              </Text>
+            </View>
           </View>
-        </View>
 
-        <View style={{ alignItems: 'center' }}>
-          <Text style={{ color: 'black', fontWeight: 'bold' }}>Tipe Surat:</Text>
-          <SelectDropdown
-            data={tipeSuratDropdown}
-            onSelect={(selectedItem) => {
-              setTipeSurat(titleToSnakeCase(selectedItem));
-            }}
-          />
-          <Text style={{ color: 'black', fontWeight: 'bold' }}>Status Surat:</Text>
-          <SelectDropdown
-            data={statusSuratDropdown}
-            onSelect={(selectedItem) => {
-              setStatusSurat(titleToSnakeCase(selectedItem));
-            }}
-          />
-          <Text style={{ color: 'black', fontWeight: 'bold' }}>Sifat Surat:</Text>
-          <SelectDropdown
-            data={sifatSuratDropdown}
-            onSelect={(selectedItem) => {
-              if (selectedItem === 'Penting') {
-                setSifatSurat(true);
-              } else {
-                setSifatSurat(false);
-              }
-            }}
-          />
-        </View>
-        <TouchableOpacity
-          style={styles.bottonSize}
-          onPress={() => handleSearch()}
-        >
-          <Text style={styles.textButton}>Cari</Text>
-        </TouchableOpacity>
-        <ScrollView horizontal={true} >
-          <View style={styles.container}>
-            <Table borderStyle={{borderWidth: 4, borderColor: '#c8e1ff'}}>
-              <Row data={tableHead} style={styles.head} textStyle={{...styles.text, fontWeight: 'bold'}} widthArr={widthArr} />
-              <Rows data={tableData} textStyle={styles.text} widthArr={widthArr} />
-            </Table>
+          <View style={{ alignItems: 'center' }}>
+            <Text style={{ color: 'black', fontWeight: 'bold' }}>Tipe Surat:</Text>
+            <SelectDropdown
+              ref={dropdownRefTipe}
+              defaultValueByIndex={0}
+              data={tipeSuratDropdown}
+              onSelect={(selectedItem) => {
+                setTipeSurat(titleToSnakeCase(selectedItem));
+              }}
+            />
+            <Text style={{ color: 'black', fontWeight: 'bold' }}>Status Surat:</Text>
+            <SelectDropdown
+              ref={dropdownRefStatus}
+              defaultValueByIndex={0}
+              data={statusSuratDropdown}
+              onSelect={(selectedItem) => {
+                setStatusSurat(titleToSnakeCase(selectedItem));
+              }}
+            />
+            <Text style={{ color: 'black', fontWeight: 'bold' }}>Sifat Surat:</Text>
+            <SelectDropdown
+              ref={dropdownRefSifat}
+              defaultValueByIndex={0}
+              data={sifatSuratDropdown}
+              onSelect={(selectedItem) => {
+                if (selectedItem === 'Penting') {
+                  setSifatSurat(true);
+                } else {
+                  setSifatSurat(false);
+                }
+              }}
+            />
           </View>
-        </ScrollView>
-      </View>
+          <TouchableOpacity
+            style={styles.bottonSize}
+            onPress={() => handleSearch()}
+          >
+            <Text style={styles.textButton}>Cari</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{...styles.bottonSize, backgroundColor: 'red'}}
+            onPress={() => handleSearchReset()}
+          >
+            <Text style={styles.textButton}>Reset</Text>
+          </TouchableOpacity>
+          <ScrollView horizontal={true} >
+            <View style={styles.container}>
+              <Table borderStyle={{borderWidth: 4, borderColor: '#c8e1ff'}}>
+                <Row data={tableHead} style={styles.head} textStyle={{...styles.text, fontWeight: 'bold'}} widthArr={widthArr} />
+                <Rows data={tableData} textStyle={styles.text} widthArr={widthArr} />
+              </Table>
+            </View>
+          </ScrollView>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -432,7 +455,7 @@ const SuratMasukScreen = ({ navigation }) => {
 export default SuratMasukScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 0, marginRight: 10, paddingTop: 30, backgroundColor: '#fff' },
+  container: { flex: 1, padding: 0, marginRight: 10, paddingTop: 30, backgroundColor: '#fff', marginBottom: 50 },
   head: { height: 40, backgroundColor: '#f1f8ff' },
   text: { margin: 6, color: 'black', textAlign: 'center' },
   btn: { marginLeft: 25, width: 100, height: 25, backgroundColor: '#78B7BB',  borderRadius: 2 },
@@ -461,7 +484,7 @@ const styles = StyleSheet.create({
     width: width - 36,
     height: 50,
     borderRadius: 10,
-    marginBottom: 30,
+    marginBottom: 5,
     backgroundColor: 'blue',
     justifyContent: 'center',
     alignItems: 'center',
