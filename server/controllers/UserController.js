@@ -1,11 +1,14 @@
 const {
-	users
+	users,
+	surats,
+	cutis,
 } = require('../models');
 const createError = require('http-errors');
 const { StatusCodes } = require('http-status-codes');
 const { comparePassword, hashPassword } = require("../helpers/bcrypt");
 const { generateToken } = require("../helpers/jwt");
 const { Op } = require("sequelize");
+const groupBy = require('../helpers/groupBy');
 
 class UserController {
 	static async loginUser(req, res, next) {
@@ -202,6 +205,54 @@ class UserController {
       		res.status(StatusCodes.OK).json({
 				msg: 'Success',
 			});
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	static async listCuti(req, res, next) {
+		try {
+			if (req.UserData.jabatan !== 'direktur_surat_masuk') {
+				throw createError(StatusCodes.UNAUTHORIZED, 'User Tidak Ada Akses');
+			}
+			let result = []
+			const dataSurat = await surats.findAll({
+				where: {
+					tipe_template_surat: 'cuti',
+					status_surat: 'disetujui',
+				},
+			});
+			if (!dataSurat) {
+				res.status(StatusCodes.OK).json([]);
+				return;
+			}
+			const groupData = groupBy(dataSurat, 'nik_karyawan');
+			const key = Object.keys(groupData);
+			const dataCuti = await cutis.findAll({
+				where: {
+					nik_karyawan: {
+						[Op.in]: key,
+					}
+				}
+			});
+			const resultTemp = [];
+			dataCuti.reduce(function(res, value) {
+				if (!res[value.nik_karyawan]) {
+					res[value.nik_karyawan] = { nik_karyawan: value.nik_karyawan, jumlah_hari: 0 };
+					resultTemp.push(res[value.nik_karyawan])
+				}
+				res[value.nik_karyawan].jumlah_hari += value.jumlah_hari;
+				return res;
+			}, {});
+			result = resultTemp.map((data, idx) => {
+				const nama_karyawan = dataSurat.filter((surat) => surat.nik_karyawan === data.nik_karyawan);
+				return {
+					...data,
+					id: idx + 1,
+					nama_karyawan: nama_karyawan[0].dataValues.nama_pengirim,
+				}
+			});
+      		res.status(StatusCodes.OK).json(result);
 		} catch (err) {
 			next(err);
 		}
