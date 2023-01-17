@@ -61,6 +61,60 @@ module.exports = {
       `,
       created_at: new Date(),
       updated_at: new Date()
+    }, {
+      tipe_surat: "kerjasama",
+      isi_surat: `Yang bertanda tangan di bawah ini:
+      Nama: {nama_pengirim}
+      Jabatan: {jabatan pengirim}
+      Alamat: {alamat_pengirim}
+
+      Selanjutnya disebut sebagai pihak pertama
+
+      Nama: {nama_penerima}
+      Jabatan: {jabatan_penerima}
+      Alamat : {alamat_penerima}
+
+      Selanjutnya disebut sebagai pihak kedua
+
+      Untuk selanjutnya antara Pihak Pertama ingin mengajukan perjanjian kepada Pihak Kedua.
+
+      Demikian perjajian kerjasama ini kami buat untuk menjadi ikatan di antara kami.
+
+      Perjanjian ini kami buat secara penuh kesadaran dan tanpa paksaan dari manapun.
+
+      Jika terjadi perselisihan pada pelaksanaan perjanjian ini, maka kami sepakat menyelesaikannya dengan cara kekeluargaan dan musyawarah.
+
+      Namun, jika tidak terselesaikan dengan batas waktu yang ditentukan, kami sepakat menyelesaikan secara hukum yang berlaku.
+
+      {tanggal_surat}      
+      `,
+      created_at: new Date(),
+      updated_at: new Date()
+    }, {
+      tipe_surat: "ceklab",
+      isi_surat: `Disposisi
+
+      Perihal: Permohonan Laboratorium Kesehatan Daerah DKI Jakarta 
+      
+      Kepada Yth. {nama_penerima}
+      {jabatan_penerima}
+      {alamat_penerima}
+
+      Dengan hormat,
+
+      Yang bertanda tangan di bawah ini:
+      Nama Lengkap                                	:{nama_pengirim}
+      Pekerjaan/Jabatan                            	:{jabatan_pengirim}
+      Alamat kantor Saat Ini                    	:{alamat_pengirim}
+
+      Dengan ini mengajukan permohonan untuk mendapatkan surat Rekomendasi Laboratorium Klinik Utama.
+      Demikian permohonan ini saya sampaikan. Atas perhatiannya saya ucapkan terima kasih.
+      
+      {tanggal_surat} 
+      {nama_pengirim}         
+      `,
+      created_at: new Date(),
+      updated_at: new Date()
     }], {});
   },
 

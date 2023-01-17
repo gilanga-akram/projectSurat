@@ -167,6 +167,7 @@ import {
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor: 'green',
+                marginBottom: 100,
               }}
               onPress={() => ChangePasswordApi()}
             >

@@ -4,6 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Home from './src/screens/HomeScreen';
 import Login from './src/screens/LoginScreen';
 import SuratMasuk from './src/screens/SuratMasukScreen';
+import BuatSurat from './src/screens/BuatSuratScreen';
 import SearchUser from './src/screens/SearchUserScreen';
 import Register from './src/screens/RegisterScreen';
 import SplashScreen from './src/screens/SplashScreen';
@@ -129,6 +130,11 @@ const App = ({navigation}) => {
               <Stack.Screen
                 name="SuratMasuk"
                 component={SuratMasuk}
+                options={{title: null, headerShown: false}}
+              />
+              <Stack.Screen
+                name="BuatSurat"
+                component={BuatSurat}
                 options={{title: null, headerShown: false}}
               />
               <Stack.Screen

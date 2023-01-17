@@ -103,9 +103,12 @@ class SuratController {
                     }
 
                 const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
-                const firstDate = tanggal_mulai;
-                const secondDate = tanggal_selesai;
+                const firstDate = new Date(tanggal_mulai);
+                const secondDate = new Date(tanggal_selesai);
                 const diffDays = Math.round(Math.abs((firstDate - secondDate) / oneDay));
+                if (diffDays > 10) {
+                    throw createHttpError(StatusCodes.BAD_REQUEST, 'Jatah Cuti Sudah Habis');
+                }
                 const dataCuti = await cutis.findAll({
                     where: {
                         nik_karyawan: nik_karyawan,
@@ -113,7 +116,8 @@ class SuratController {
                 });
                 if (dataCuti) {
                     const sumCuti = dataCuti.map(data => data.jumlah_hari).reduce((partialSum, a) => partialSum + a, 0);
-                    if (sumCuti >= 10) {
+                    console.log(sumCuti);
+                    if ((sumCuti + diffDays) >= 10) {
                         throw createHttpError(StatusCodes.BAD_REQUEST, 'Jatah Cuti Sudah Habis');
                     }
                 }
@@ -139,6 +143,76 @@ class SuratController {
                     template_surat_id: templateSurat.template_surat_id,
                     tanggal_surat: tanggal_surat,
                     nik_karyawan: nik_karyawan,
+                });
+            } else if (tipe_template_surat === 'kerjasama') {
+                if (req.UserData.jabatan !== 'staff_surat_keluar') {
+                    throw createHttpError(StatusCodes.UNAUTHORIZED, 'User do not have access');
+                }
+                const templateSurat = await template_surats.findOne({
+                    where: {
+                        tipe_surat: tipe_template_surat,
+                    },
+                });
+                if (!templateSurat) throw createHttpError(StatusCodes.BAD_REQUEST, 'Tipe Template Surat Tidak Ada');
+                if (!nama_pengirim,
+                    !jabatan_pengirim,
+                    !alamat_pengirim,
+                    !nama_penerima,
+                    !alamat_penerima,
+                    !jabatan_penerima) {
+                        throw createHttpError(StatusCodes.BAD_REQUEST, 'Required All Fields');
+                    }
+                result = await surats.create({
+                    nama_pengirim: nama_pengirim,
+                    jabatan_pengirim: jabatan_pengirim,
+                    alamat_pengirim: alamat_pengirim,
+                    nama_penerima: nama_penerima,
+                    alamat_penerima: alamat_penerima,
+                    jabatan_penerima: jabatan_penerima,
+                    user_id: req.UserData.user_id,
+                    status_surat: 'dibuat',
+                    tipe_template_surat: tipe_template_surat,
+                    is_important: is_important,
+                    tipe_surat: 'keluar',
+                    jenis_surat: 'external',
+                    deadline: deadline,
+                    template_surat_id: templateSurat.template_surat_id,
+                    tanggal_surat: tanggal_surat,
+                });
+            } else if (tipe_template_surat === 'ceklab') {
+                if (req.UserData.jabatan !== 'staff_surat_masuk') {
+                    throw createHttpError(StatusCodes.UNAUTHORIZED, 'User do not have access');
+                }
+                const templateSurat = await template_surats.findOne({
+                    where: {
+                        tipe_surat: tipe_template_surat,
+                    },
+                });
+                if (!templateSurat) throw createHttpError(StatusCodes.BAD_REQUEST, 'Tipe Template Surat Tidak Ada');
+                if (!nama_pengirim,
+                    !jabatan_pengirim,
+                    !alamat_pengirim,
+                    !nama_penerima,
+                    !alamat_penerima,
+                    !jabatan_penerima) {
+                        throw createHttpError(StatusCodes.BAD_REQUEST, 'Required All Fields');
+                    }
+                result = await surats.create({
+                    nama_pengirim: nama_pengirim,
+                    jabatan_pengirim: jabatan_pengirim,
+                    alamat_pengirim: alamat_pengirim,
+                    nama_penerima: nama_penerima,
+                    alamat_penerima: alamat_penerima,
+                    jabatan_penerima: jabatan_penerima,
+                    user_id: req.UserData.user_id,
+                    status_surat: 'dibuat',
+                    tipe_template_surat: tipe_template_surat,
+                    is_important: is_important,
+                    tipe_surat: 'masuk',
+                    jenis_surat: 'external',
+                    deadline: deadline,
+                    template_surat_id: templateSurat.template_surat_id,
+                    tanggal_surat: tanggal_surat,
                 });
             } else {
                 throw createHttpError(StatusCodes.BAD_REQUEST, 'Tipe Template Surat Tidak Ada');
@@ -206,6 +280,7 @@ class SuratController {
             const offset = resPerPage * page - resPerPage;
             let query = {
                 where: {},
+                order: [['surat_id', 'desc']],
             };
             if (req.UserData.jabatan === 'direktur_surat_masuk' || req.UserData.jabatan === 'staff_surat_masuk') {
                 query.where.tipe_surat = 'masuk';
@@ -315,6 +390,86 @@ class SuratController {
             });
             res.status(StatusCodes.OK).json({
                 msg: 'Success',
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async showSurat(req, res, next) {
+        try {
+            const {
+                tipe_surat,
+                nama_pengirim,
+                jabatan_pengirim,
+                alamat_pengirim,
+                no_hp_pengirim,
+                email_pengirim,
+                tanggal_mulai,
+                tanggal_selesai,
+                nama_penerima,
+                jabatan_penerima,
+                alamat_penerima,
+                tanggal_surat,
+                alasan_cuti,
+                nik_karyawan,
+            } = req.body;
+            console.log(tipe_surat);
+            const templateSurat = await template_surats.findOne({
+                where: {
+                    tipe_surat: tipe_surat,
+                }
+            });
+            if (!templateSurat) throw createHttpError(StatusCodes.NOT_FOUND, 'Template Not Found');
+            if (tipe_surat === 'magang') {
+                if (!nama_pengirim,
+                    !alamat_pengirim,
+                    !no_hp_pengirim,
+                    !email_pengirim,
+                    !tanggal_mulai,
+                    !tanggal_selesai,
+                    !nama_penerima,
+                    !alamat_penerima,
+                    !tanggal_surat) {
+                        throw createHttpError(StatusCodes.BAD_REQUEST, 'Required All Fields');
+                }
+            } else if (tipe_surat === 'cuti') {
+                if (!nama_pengirim,
+                    !jabatan_pengirim,
+                    !alamat_pengirim,
+                    !no_hp_pengirim,
+                    !email_pengirim,
+                    !tanggal_mulai,
+                    !tanggal_selesai,
+                    !nama_penerima,
+                    !alamat_penerima,
+                    !jabatan_penerima,
+                    !alasan_cuti,
+                    !nik_karyawan) {
+                    throw createHttpError(StatusCodes.BAD_REQUEST, 'Required All Fields');
+                }
+            }
+            const changeWord = {
+                "{nama_pengirim}": nama_pengirim,
+                "{jabatan_pengirim}": jabatan_pengirim,
+                "{alamat_pengirim}": alamat_pengirim,
+                "{no_hp_pengirim}": no_hp_pengirim,
+                "{email_pengirim}": email_pengirim,
+                "{tanggal_mulai}": moment(tanggal_mulai).format('LL'),
+                "{tanggal_selesai}": moment(tanggal_selesai).format('LL'),
+                "{nama_penerima}": nama_penerima,
+                "{jabatan_penerima}": jabatan_penerima,
+                "{alamat_penerima}": alamat_penerima,
+                "{tanggal_surat}": tanggal_surat,
+                "{alasan_cuti}": alasan_cuti,
+                "{nik_karyawan}": nik_karyawan,
+            }
+            const newTemplateSurat = templateSurat.isi_surat.replace(/{nama_pengirim}|{jabatan_pengirim}|{alamat_pengirim}|{no_hp_pengirim}|{email_pengirim}|{tanggal_mulai}|{tanggal_selesai}|{nama_penerima}|{jabatan_penerima}|{alamat_penerima}|{tanggal_surat}|{alasan_cuti}|{nik_karyawan}/gi, function(matched){
+                return changeWord[matched];
+            });
+            res.status(StatusCodes.OK).json({
+                msg: 'Success',
+                isiSurat: newTemplateSurat,
             });
         } catch (err) {
             next(err);

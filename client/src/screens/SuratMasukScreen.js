@@ -78,7 +78,7 @@ const SuratMasukScreen = ({ navigation }) => {
     const dataTemp = data.allDataSurat.map((data) => {
       return [
         data.tanggal_surat,
-        toTitleCase(data.tipe_template_surat),
+        toTitleCase(data.tipe_template_surat === 'ceklab' ? 'Disposisi' : data.tipe_template_surat),
         data.nama_pengirim,
         data.nama_penerima,
         toTitleCase(data.status_surat),
