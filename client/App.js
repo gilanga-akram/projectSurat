@@ -12,6 +12,9 @@ import SplashScreen from './src/screens/SplashScreen';
 import ChangePassword from './src/screens/ChangePasswordScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {AuthContext} from './src/components/Context';
+import { View, LogBox } from "react-native";
+
+LogBox.ignoreAllLogs();
 
 const Stack = createNativeStackNavigator();
 

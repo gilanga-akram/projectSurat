@@ -212,9 +212,6 @@ class UserController {
 
 	static async listCuti(req, res, next) {
 		try {
-			if (req.UserData.jabatan !== 'direktur_surat_masuk') {
-				throw createError(StatusCodes.UNAUTHORIZED, 'User Tidak Ada Akses');
-			}
 			let result = []
 			const dataSurat = await surats.findAll({
 				where: {

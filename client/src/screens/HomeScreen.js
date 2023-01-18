@@ -156,34 +156,6 @@ const Home = ({navigation}) => {
                     </Text>
                   </TouchableOpacity>
                 </> : <></> }
-                { role === 'direktur_surat_masuk' ? <>
-                  <TouchableOpacity
-                    style={{
-                      alignItems: 'center',
-                      width: width - 32,
-                      height: 120,
-                      borderWidth: 1,
-                      borderRadius: 10,
-                      borderColor: '#3AB4F2',
-                      marginTop: 20,
-                      flexDirection: 'row',
-                    }}
-                    onPress={() => navigation.navigate('ListCuti')}
-                  >
-                    <Image source={findStuff} style={{width: 100, height: 100}} />
-                    <Text
-                      style={{
-                        color: '#3AB4F2',
-                        fontSize: 25,
-                        fontWeight: '700',
-                        marginTop: 10,
-                        marginLeft: 20,
-                      }}
-                    >
-                      List Cuti
-                    </Text>
-                  </TouchableOpacity>
-                </> : <></> }
                 <TouchableOpacity
                   style={{
                     alignItems: 'center',
@@ -295,6 +267,34 @@ const Home = ({navigation}) => {
                 </TouchableOpacity>
               </>
             ) : <></>}
+            { role === 'direktur_surat_masuk' || role === 'direktur_surat_keluar' ? <>
+                <TouchableOpacity
+                  style={{
+                    alignItems: 'center',
+                    width: width - 32,
+                    height: 120,
+                    borderWidth: 1,
+                    borderRadius: 10,
+                    borderColor: '#3AB4F2',
+                    marginTop: 20,
+                    flexDirection: 'row',
+                  }}
+                  onPress={() => navigation.navigate('ListCuti')}
+                >
+                  <Image source={findStuff} style={{width: 100, height: 100}} />
+                  <Text
+                    style={{
+                      color: '#3AB4F2',
+                      fontSize: 25,
+                      fontWeight: '700',
+                      marginTop: 10,
+                      marginLeft: 20,
+                    }}
+                  >
+                    List Cuti
+                  </Text>
+                </TouchableOpacity>
+              </> : <></> }
             <TouchableOpacity
               style={{
                 alignItems: 'center',

@@ -7,6 +7,7 @@ const {
 } = require('../models');
 const moment = require('moment');
 moment.locale('id'); 
+const { Op } = require('sequelize');
 
 class SuratController {
     static async createSurat(req, res, next) {
@@ -282,10 +283,19 @@ class SuratController {
                 where: {},
                 order: [['surat_id', 'desc']],
             };
-            if (req.UserData.jabatan === 'direktur_surat_masuk' || req.UserData.jabatan === 'staff_surat_masuk') {
+            if (req.UserData.jabatan === 'staff_surat_masuk') {
                 query.where.tipe_surat = 'masuk';
-            } else if (req.UserData.jabatan === 'direktur_surat_keluar' || req.UserData.jabatan === 'staff_surat_keluar') {
+            } else if (req.UserData.jabatan === 'staff_surat_keluar') {
                 query.where.tipe_surat = 'keluar';
+            }
+            if (req.UserData.jabatan === 'direktur_surat_masuk') {
+                query.where.tipe_template_surat = {
+                    [Op.in]: ['kerjasama', 'ceklab']
+                }
+            } else if (req.UserData.jabatan === 'direktur_surat_keluar') {
+                query.where.tipe_template_surat = {
+                    [Op.in]: ['magang', 'cuti']
+                }
             }
             if (tipe_template_surat) {
                 query.where.tipe_template_surat = tipe_template_surat;

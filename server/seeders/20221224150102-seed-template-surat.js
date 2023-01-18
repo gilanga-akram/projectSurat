@@ -4,115 +4,22 @@ module.exports = {
   up: async(queryInterface, Sequelize) => {
     await queryInterface.bulkInsert('template_surats', [{
       tipe_surat: "magang",
-      isi_surat: `
-      Formulir dan Pernyataan Pengajuan Surat Permohonan Pemagangan
-      
-      Saya yang bertanda tangan dibawah ini:
-
-      Nama Lengkap	: {nama_pengirim}
-      Alamat Asal (KTP)	: {alamat_pengirim}
-      No. HP/WA		: {no_hp_pengirim}
-      Email			: {email_pengirim}
-      Periode Magang	: {tanggal_mulai} - {tanggal_selesai}
-      Mengajukan pemagangan pada:
-
-      Instansi		: Labkesda DKI Jakarta
-      Nama Pimpinan	: {nama_penerima}
-      Alamat Instansi	: {alamat_penerima}
-      Dengan ini saya menyatakan dengan sungguh-sungguh, bahwa:
-        Saya benar-benar akan 	mengikuti Mata Kuliah Pemagangan;
-         
-        Pimpinan/pejabat yang 	berwenang dalam instansi magang tersebut diatas telah mengizinkan 	saya untuk 	melakukan pemagangan mandiri 	sesuai dengan tanggal pengajuan magang dan bersedia menerapkan 	pembelajaran matakuliah pemagangan secara daring;
-         
-        Saya tidak akan 	mengubah permohonan pemagangan mandiri selain instansi magang 	tersebut di atas;
-         
-        Saya siap mematuhi 	segala peraturan pemerintah, peraturan instansi magang, termasuk dan 	tidak terbatas pada protokol kesehatan dalam Pandemi Covid-19, dan 	saya siap menerima konsekuensi bilamana saya tidak memenuhi 	pernyataan ini;
-      {tanggal_surat}
-      
-      `,
+      isi_surat: `<p><br>&nbsp; &nbsp; &nbsp; Formulir dan Pernyataan Pengajuan Surat Permohonan Pemagangan<br>&nbsp; &nbsp; &nbsp;<br>&nbsp; &nbsp; &nbsp; Saya yang bertanda tangan dibawah ini:<br><br>&nbsp; &nbsp; &nbsp; Nama Lengkap &nbsp; &nbsp;: {nama_pengirim}<br>&nbsp; &nbsp; &nbsp; Alamat Asal (KTP) &nbsp; &nbsp;: {alamat_pengirim}<br>&nbsp; &nbsp; &nbsp; No. HP/WA &nbsp; &nbsp; &nbsp; &nbsp;: {no_hp_pengirim}<br>&nbsp; &nbsp; &nbsp; Email &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;: {email_pengirim}<br>&nbsp; &nbsp; &nbsp; Periode Magang &nbsp; &nbsp;: {tanggal_mulai} - {tanggal_selesai}<br>&nbsp; &nbsp; &nbsp; Mengajukan pemagangan pada:<br><br>&nbsp; &nbsp; &nbsp; Instansi &nbsp; &nbsp; &nbsp; &nbsp;: Labkesda DKI Jakarta<br>&nbsp; &nbsp; &nbsp; Nama Pimpinan &nbsp; &nbsp;: {nama_penerima}<br>&nbsp; &nbsp; &nbsp; Alamat Instansi &nbsp; &nbsp;: {alamat_penerima}<br>&nbsp; &nbsp; &nbsp; Dengan ini saya menyatakan dengan sungguh-sungguh, bahwa:<br>&nbsp; &nbsp; &nbsp; &nbsp; Saya benar-benar akan mengikuti Mata Kuliah Pemagangan;<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<br>&nbsp; &nbsp; &nbsp; &nbsp; Pimpinan/pejabat yang berwenang dalam instansi magang tersebut diatas telah mengizinkan saya untuk melakukan pemagangan mandiri sesuai dengan tanggal pengajuan magang dan bersedia menerapkan pembelajaran matakuliah pemagangan secara daring;<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<br>&nbsp; &nbsp; &nbsp; &nbsp; Saya tidak akan mengubah permohonan pemagangan mandiri selain instansi magang tersebut di atas;<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<br>&nbsp; &nbsp; &nbsp; &nbsp; Saya siap mematuhi segala peraturan pemerintah, peraturan instansi magang, termasuk dan tidak terbatas pada protokol kesehatan dalam Pandemi Covid-19, dan saya siap menerima konsekuensi bilamana saya tidak memenuhi pernyataan ini;<br>&nbsp; &nbsp; &nbsp; {tanggal_surat}<br>&nbsp; &nbsp; &nbsp;<br>&nbsp; &nbsp; &nbsp;<br><br></p>`,
       created_at: new Date(),
       updated_at: new Date()
     }, {
       tipe_surat: "cuti",
-      isi_surat: `Kepada Yth. {nama_penerima}
-      {jabatan_penerima}
-      {alamat_penerima}
-      
-      Yang bertanda tangan di bawah ini,
-      
-      Nama Lengkap	: {nama_pengirim}
-      Jabatan		: {jabatan_pengirim}
-      Alamat Asal (KTP)	: {alamat_pengirim}
-      No. HP/WA		: {no_hp_pengirim}
-      Email			: {email_pengirim}
-      NIK Karyawan		: {nik_karyawan}
-      
-      Dengan surat ini saya mengajukan permintaan cuti dengan alasan {alasan_cuti} terhitung mulai tanggal {tanggal_mulai} sampai dengan tanggal {tanggal_selesai}.
-      
-      Demikianlah surat permintaan ini saya buat untuk dapat dipertimbangkan sebagaimana mestinya. Atas izin yang diberikan saya ucapkan terima kasih.
-      
-      Hormat saya,
-      
-      
-      {nama_pengirim}
-      {no_hp_pengirim}
-      
-      {tanggal_surat}
-      `,
+      isi_surat: `<p>Kepada Yth. {nama_penerima}<br>&nbsp; &nbsp; &nbsp; {jabatan_penerima}<br>&nbsp; &nbsp; &nbsp; {alamat_penerima}<br>&nbsp; &nbsp; &nbsp;<br>&nbsp; &nbsp; &nbsp; Yang bertanda tangan di bawah ini,<br>&nbsp; &nbsp; &nbsp;<br>&nbsp; &nbsp; &nbsp; Nama Lengkap &nbsp; &nbsp;: {nama_pengirim}<br>&nbsp; &nbsp; &nbsp; Jabatan &nbsp; &nbsp; &nbsp; &nbsp;: {jabatan_pengirim}<br>&nbsp; &nbsp; &nbsp; Alamat Asal (KTP) &nbsp; &nbsp;: {alamat_pengirim}<br>&nbsp; &nbsp; &nbsp; No. HP/WA &nbsp; &nbsp; &nbsp; &nbsp;: {no_hp_pengirim}<br>&nbsp; &nbsp; &nbsp; Email &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;: {email_pengirim}<br>&nbsp; &nbsp; &nbsp; NIK Karyawan &nbsp; &nbsp; &nbsp; &nbsp;: {nik_karyawan}<br>&nbsp; &nbsp; &nbsp;<br>&nbsp; &nbsp; &nbsp; Dengan surat ini saya mengajukan permintaan cuti dengan alasan {alasan_cuti} terhitung mulai tanggal {tanggal_mulai} sampai dengan tanggal {tanggal_selesai}.<br>&nbsp; &nbsp; &nbsp;<br>&nbsp; &nbsp; &nbsp; Demikianlah surat permintaan ini saya buat untuk dapat dipertimbangkan sebagaimana mestinya. Atas izin yang diberikan saya ucapkan terima kasih.<br>&nbsp; &nbsp; &nbsp;<br>&nbsp; &nbsp; &nbsp; Hormat saya,<br>&nbsp; &nbsp; &nbsp;<br>&nbsp; &nbsp; &nbsp;<br>&nbsp; &nbsp; &nbsp; {nama_pengirim}<br>&nbsp; &nbsp; &nbsp; {no_hp_pengirim}<br>&nbsp; &nbsp; &nbsp;<br>&nbsp; &nbsp; &nbsp; {tanggal_surat}<br>&nbsp; &nbsp; &nbsp;</p>`,
       created_at: new Date(),
       updated_at: new Date()
     }, {
       tipe_surat: "kerjasama",
-      isi_surat: `Yang bertanda tangan di bawah ini:
-      Nama: {nama_pengirim}
-      Jabatan: {jabatan pengirim}
-      Alamat: {alamat_pengirim}
-
-      Selanjutnya disebut sebagai pihak pertama
-
-      Nama: {nama_penerima}
-      Jabatan: {jabatan_penerima}
-      Alamat : {alamat_penerima}
-
-      Selanjutnya disebut sebagai pihak kedua
-
-      Untuk selanjutnya antara Pihak Pertama ingin mengajukan perjanjian kepada Pihak Kedua.
-
-      Demikian perjajian kerjasama ini kami buat untuk menjadi ikatan di antara kami.
-
-      Perjanjian ini kami buat secara penuh kesadaran dan tanpa paksaan dari manapun.
-
-      Jika terjadi perselisihan pada pelaksanaan perjanjian ini, maka kami sepakat menyelesaikannya dengan cara kekeluargaan dan musyawarah.
-
-      Namun, jika tidak terselesaikan dengan batas waktu yang ditentukan, kami sepakat menyelesaikan secara hukum yang berlaku.
-
-      {tanggal_surat}      
-      `,
+      isi_surat: `<p>Yang bertanda tangan di bawah ini:<br>&nbsp; &nbsp; &nbsp; Nama: {nama_pengirim}<br>&nbsp; &nbsp; &nbsp; Jabatan: {jabatan pengirim}<br>&nbsp; &nbsp; &nbsp; Alamat: {alamat_pengirim}<br><br>&nbsp; &nbsp; &nbsp; Selanjutnya disebut sebagai pihak pertama<br><br>&nbsp; &nbsp; &nbsp; Nama: {nama_penerima}<br>&nbsp; &nbsp; &nbsp; Jabatan: {jabatan_penerima}<br>&nbsp; &nbsp; &nbsp; Alamat : {alamat_penerima}<br><br>&nbsp; &nbsp; &nbsp; Selanjutnya disebut sebagai pihak kedua<br><br>&nbsp; &nbsp; &nbsp; Untuk selanjutnya antara Pihak Pertama ingin mengajukan perjanjian kepada Pihak Kedua.<br><br>&nbsp; &nbsp; &nbsp; Demikian perjajian kerjasama ini kami buat untuk menjadi ikatan di antara kami.<br><br>&nbsp; &nbsp; &nbsp; Perjanjian ini kami buat secara penuh kesadaran dan tanpa paksaan dari manapun.<br><br>&nbsp; &nbsp; &nbsp; Jika terjadi perselisihan pada pelaksanaan perjanjian ini, maka kami sepakat menyelesaikannya dengan cara kekeluargaan dan musyawarah.<br><br>&nbsp; &nbsp; &nbsp; Namun, jika tidak terselesaikan dengan batas waktu yang ditentukan, kami sepakat menyelesaikan secara hukum yang berlaku.<br><br>&nbsp; &nbsp; &nbsp; {tanggal_surat} &nbsp; &nbsp; &nbsp;<br>&nbsp; &nbsp; &nbsp;</p>`,
       created_at: new Date(),
       updated_at: new Date()
     }, {
       tipe_surat: "ceklab",
-      isi_surat: `Disposisi
-
-      Perihal: Permohonan Laboratorium Kesehatan Daerah DKI Jakarta 
-      
-      Kepada Yth. {nama_penerima}
-      {jabatan_penerima}
-      {alamat_penerima}
-
-      Dengan hormat,
-
-      Yang bertanda tangan di bawah ini:
-      Nama Lengkap                                	:{nama_pengirim}
-      Pekerjaan/Jabatan                            	:{jabatan_pengirim}
-      Alamat kantor Saat Ini                    	:{alamat_pengirim}
-
-      Dengan ini mengajukan permohonan untuk mendapatkan surat Rekomendasi Laboratorium Klinik Utama.
-      Demikian permohonan ini saya sampaikan. Atas perhatiannya saya ucapkan terima kasih.
-      
-      {tanggal_surat} 
-      {nama_pengirim}         
-      `,
+      isi_surat: `<p>Disposisi<br><br>&nbsp; &nbsp; &nbsp; Perihal: Permohonan Laboratorium Kesehatan Daerah DKI Jakarta<br>&nbsp; &nbsp; &nbsp;<br>&nbsp; &nbsp; &nbsp; Kepada Yth. {nama_penerima}<br>&nbsp; &nbsp; &nbsp; {jabatan_penerima}<br>&nbsp; &nbsp; &nbsp; {alamat_penerima}<br><br>&nbsp; &nbsp; &nbsp; Dengan hormat,<br><br>&nbsp; &nbsp; &nbsp; Yang bertanda tangan di bawah ini:<br>&nbsp; &nbsp; &nbsp; Nama Lengkap &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;:{nama_pengirim}<br>&nbsp; &nbsp; &nbsp; Pekerjaan/Jabatan &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;:{jabatan_pengirim}<br>&nbsp; &nbsp; &nbsp; Alamat kantor Saat Ini &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;:{alamat_pengirim}<br><br>&nbsp; &nbsp; &nbsp; Dengan ini mengajukan permohonan untuk mendapatkan surat Rekomendasi Laboratorium Klinik Utama.<br>&nbsp; &nbsp; &nbsp; Demikian permohonan ini saya sampaikan. Atas perhatiannya saya ucapkan terima kasih.<br>&nbsp; &nbsp; &nbsp;<br>&nbsp; &nbsp; &nbsp; {tanggal_surat}<br>&nbsp; &nbsp; &nbsp; {nama_pengirim} &nbsp; &nbsp; &nbsp; &nbsp;<br>&nbsp; &nbsp; &nbsp;</p>`,
       created_at: new Date(),
       updated_at: new Date()
     }], {});

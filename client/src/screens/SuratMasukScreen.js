@@ -35,7 +35,7 @@ const SuratMasukScreen = ({ navigation }) => {
   const [tableHead, setTableHead] = useState(['Tanggal Surat', 'Tipe Surat', 'Name Pengirim', 'Nama Penerima', 'Status Surat', 'Sifat Surat', 'Action']);
   const [tableData, setTableData] = useState([]);
   const [widthArr, setWidthArr] = useState([150, 150, 150, 150, 150, 150, 150]);
-  const [tipeSuratDropdown, setTipeSuratDropdown] = useState(['Magang', 'Cuti', 'Cek Lab', 'Kerjasama']);
+  const [tipeSuratDropdown, setTipeSuratDropdown] = useState(['Magang', 'Cuti', 'Disposisi', 'Kerjasama']);
   const [tipeSurat, setTipeSurat] = useState('');
   const [statusSuratDropdown, setStatusSuratDropdown] = useState(['Dibuat', 'Disetujui', 'Ditolak']);
   const [statusSurat, setStatusSurat] = useState('');
@@ -110,7 +110,11 @@ const SuratMasukScreen = ({ navigation }) => {
   const handleSearch = async () => {
     try {
       let search = [];
-      if (tipeSurat) search.push(`tipe_template_surat=${tipeSurat}`);
+      if (tipeSurat === 'disposisi') {
+        search.push(`tipe_template_surat=ceklab`);
+      } else {
+        search.push(`tipe_template_surat=${tipeSurat}`);
+      }
       if (statusSurat) search.push(`status_surat=${statusSurat}`);
       if (sifatSurat) search.push(`is_important=${sifatSurat}`);
       if (search.length) search = search.join('&');
@@ -333,7 +337,7 @@ const SuratMasukScreen = ({ navigation }) => {
                     </View>
                   }
                   {
-                    (role === 'direktur_surat_masuk' || role === 'direktur_surat_keluar') && suratModal.status_surat !== 'dibuat' ? <></> : 
+                    (role === 'direktur_surat_masuk' || role === 'direktur_surat_keluar') && suratModal.status_surat === 'dibuat' ? 
                     <>
                       <View style={{flexDirection: 'row', marginTop: 15}}>
                         <Pressable
@@ -351,7 +355,7 @@ const SuratMasukScreen = ({ navigation }) => {
                           <Text style={styles.textStyle}>Tolak</Text>
                         </Pressable>
                       </View>
-                    </>
+                    </> : <></>
                   }
                   <View style={{flexDirection: 'row', marginTop: 15}}>
                     <Pressable

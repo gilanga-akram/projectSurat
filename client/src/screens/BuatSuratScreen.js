@@ -268,7 +268,14 @@ import {
                         <Text style={styles.modalText}>{errMessage}</Text>
                         <View style={{flexDirection: 'row', marginTop: 15}}>
                           <Pressable
-                            style={[styles.button, styles.buttonClose, { backgroundColor: 'blue', }]}
+                            style={{
+                              borderRadius: 10,
+                              padding: 10,
+                              elevation: 2,
+                              marginHorizontal: 10,
+                              width: 223,
+                              backgroundColor: 'blue'
+                            }}
                             onPress={() => handleCloseModal()}
                           >
                           <Text style={styles.textStyle}>Close</Text>
