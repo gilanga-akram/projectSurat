@@ -6143,10 +6143,10 @@
   "resolved" "https://registry.npmjs.org/react-native-select-dropdown/-/react-native-select-dropdown-2.0.4.tgz"
   "version" "2.0.4"
 
-"react-native-share@^7.6.6":
-  "integrity" "sha512-nhNjiNvTxg3PKmOg3/tQnWJjw2NpjcimxorEIV3JFEPcU6vE/bO2vWTf0OGOLMHMqyV2B6M0/7KwqET8yWk1rA=="
-  "resolved" "https://registry.npmjs.org/react-native-share/-/react-native-share-7.6.6.tgz"
-  "version" "7.6.6"
+"react-native-share@^7.9.1":
+  "integrity" "sha512-v4b6lD4YsiCJB14kjXons+d5cvvxgLv8OdBF0aP58X8Qqbcj81QNv1icAxiNmhxFx5OFYsu/E6v+o8S0GSaneQ=="
+  "resolved" "https://registry.npmjs.org/react-native-share/-/react-native-share-7.9.1.tgz"
+  "version" "7.9.1"
 
 "react-native-table-component@^1.2.2":
   "integrity" "sha512-7bbsi5431iWcjj3toASh8lFHGi6AG/+MTd4M7GuksXKxx/CFs/Qwv1Ys7D2wgyuYKe3hxWNfSVrteFj0tOYXYw=="

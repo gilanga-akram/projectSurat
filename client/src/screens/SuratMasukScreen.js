@@ -20,6 +20,8 @@ import { toTitleCase, titleToSnakeCase } from '../utilities/snakeCaseToTitleCase
 import RenderHtml from 'react-native-render-html';
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
 import SelectDropdown from 'react-native-select-dropdown';
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import Share from 'react-native-share';
 
 const { width } = Dimensions.get('screen');
 
@@ -41,6 +43,7 @@ const SuratMasukScreen = ({ navigation }) => {
   const [statusSurat, setStatusSurat] = useState('');
   const [sifatSuratDropdown, setSifatSuratDropdown] = useState(['Penting', 'Tidak Penting']);
   const [sifatSurat, setSifatSurat] = useState('');
+  const [loading, setLoading] = useState(false);
   const dropdownRefTipe = useRef({});
   const dropdownRefStatus = useRef({});
   const dropdownRefSifat = useRef({});
@@ -205,6 +208,29 @@ const SuratMasukScreen = ({ navigation }) => {
     setModalVisibleSetujuiSurat(false);
   }
 
+  const handlePrint = async () => {
+    try {
+      setLoading(true);
+      let options = {
+        html: dataSuratSingle,
+        fileName: `${suratModal.tipe_template_surat}-${suratModal?.tanggal_surat}`,
+        directory: 'Documents',
+      };
+  
+      let file = await RNHTMLtoPDF.convert(options)
+      const shareResponse = await Share.open({
+        title: "Print Surat",
+        message: "Surat:",
+        url: `file://${file.filePath}`,
+        subject: "Report",
+      });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <SafeAreaView>
       <ScrollView>
@@ -335,6 +361,26 @@ const SuratMasukScreen = ({ navigation }) => {
                         <Text style={styles.textStyle}>Delete Surat</Text>
                       </Pressable>
                     </View>
+                  }
+                  {
+                    (role === 'staff_surat_masuk' || role === 'staff_surat_keluar') && suratModal.status_surat === 'disetujui' ? 
+                    loading === true ? 
+                    <View style={{flexDirection: 'row', marginTop: 15}}>
+                      <Pressable
+                        style={[styles.button, styles.buttonClose, { backgroundColor: 'orange', }]}
+                        onPress={() => {}}
+                      >
+                        <Text style={styles.textStyle}>...</Text>
+                      </Pressable>
+                    </View> : 
+                    <View style={{flexDirection: 'row', marginTop: 15}}>
+                      <Pressable
+                        style={[styles.button, styles.buttonClose, { backgroundColor: 'orange', }]}
+                        onPress={() => handlePrint()}
+                      >
+                        <Text style={styles.textStyle}>Print Surat</Text>
+                      </Pressable>
+                    </View> : <></>
                   }
                   {
                     (role === 'direktur_surat_masuk' || role === 'direktur_surat_keluar') && suratModal.status_surat === 'dibuat' ? 

@@ -91,7 +91,11 @@ import {
     const handleBuatSurat = async () => {
         try {
             setLoading(true);
-            if (!isImportant) return 'handle modal error';
+            if (!isImportant) {
+              setErrMessage('Surat Penting atau Tidak Wajib Diisi');
+              setModalVisibleError(true);
+              return 'handle modal error';
+            }
             if (tipeSurat === 'magang') {
                 if (!value.nama_pengirim,
                     !value.alamat_pengirim,
@@ -234,7 +238,7 @@ import {
                 alasan_cuti: value.alasan_cuti,
                 nik_karyawan: value.nik_karyawan,
                 tanggal_surat: value.tanggal_surat,
-                is_important: isImportant === 'Iya' ? true : false,
+                is_important: isImportant === 'iya' ? true : false,
             },
         });
         setModalVisible(false);

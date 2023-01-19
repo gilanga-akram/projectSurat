@@ -35,9 +35,9 @@ class SuratController {
             } = req.body;
             if (!tanggal_surat) throw createHttpError(StatusCodes.BAD_REQUEST, 'Tanggal Surat is Required');
             if (is_important === undefined || is_important === null) throw createHttpError(StatusCodes.BAD_REQUEST, 'is_important is required');
-            if ((is_important === true || is_important === 'true') && !deadline) {
-                throw createHttpError(StatusCodes.BAD_REQUEST, 'Deadline required');
-            }
+            // if ((is_important === true || is_important === 'true') && !deadline) {
+            //     throw createHttpError(StatusCodes.BAD_REQUEST, 'Deadline required');
+            // }
             let result = {};
             if (tipe_template_surat === 'magang') {
                 if (req.UserData.jabatan !== 'staff_surat_masuk') {
