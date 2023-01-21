@@ -273,11 +273,11 @@ class SuratController {
             };
             if (req.UserData.jabatan === 'direktur_surat_masuk' || req.UserData.jabatan === 'staff_surat_masuk') {
                 query.where.tipe_template_surat = {
-                    [Op.in]: ['kerjasama', 'ceklab']
+                    [Op.in]: ['magang', 'ceklab']
                 }
             } else if (req.UserData.jabatan === 'direktur_surat_keluar' || req.UserData.jabatan === 'staff_surat_keluar') {
                 query.where.tipe_template_surat = {
-                    [Op.in]: ['magang', 'cuti']
+                    [Op.in]: ['kerjasama', 'cuti']
                 }
             }
             if (tipe_template_surat) {
