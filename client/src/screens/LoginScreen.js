@@ -79,7 +79,7 @@ const Login = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#3AB4F2" />
+      <StatusBar backgroundColor="#818181" />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{flex: 1}}
@@ -120,8 +120,9 @@ const Login = ({navigation}) => {
           </View>
         </Modal>
         <View style={{flex: 1, alignItems: 'center'}}>
-          <View style={{flex: 1, marginTop: 100}}>
+          <View style={{flex: 1, marginTop: 20}}>
             <Text style={styles.title}>E-Office</Text>
+            <Text style={styles.title}>Labkesda DKI Jakarta</Text>
             <Image
               style={styles.tinyLogo}
               source={require('../assets/employee.png')}
@@ -150,7 +151,7 @@ const Login = ({navigation}) => {
               value={value.password}
             />
             <TouchableOpacity style={{ marginBottom: 10, alignItems: 'center' }} onPress={() => handleForgotPassword()}>
-              <Text style={{ color: 'red', fontSize: 15, fontWeight: '700' }}>Forgot Password</Text>
+              <Text style={{ color: 'black', fontSize: 15, fontWeight: '700' }}>Forgot Password</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -173,18 +174,18 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#3AB4F2',
+    backgroundColor: '#00bbd9',
   },
   title: {
     fontWeight: '700',
     fontSize: 25,
-    color: 'red',
+    color: 'white',
     textAlign: 'center',
-    marginBottom: 50,
+    marginBottom: 20,
   },
   tinyLogo: {
-    width: 350,
-    height: 250,
+    width: 400,
+    height: 350,
     marginBottom: 50,
   },
   inputSize: {
@@ -195,7 +196,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     paddingLeft: 20,
     paddingRight: 50,
-    color: 'blue',
+    color: 'black',
   },
   inputSizeForgot: {
     width: width - 138,

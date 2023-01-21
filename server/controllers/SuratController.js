@@ -40,9 +40,6 @@ class SuratController {
             // }
             let result = {};
             if (tipe_template_surat === 'magang') {
-                if (req.UserData.jabatan !== 'staff_surat_masuk') {
-                    throw createHttpError(StatusCodes.UNAUTHORIZED, 'User do not have access');
-                }
                 const templateSurat = await template_surats.findOne({
                     where: {
                         tipe_surat: tipe_template_surat,
@@ -79,9 +76,6 @@ class SuratController {
                     tanggal_surat: tanggal_surat,
                 });
             } else if (tipe_template_surat === 'cuti') {
-                if (req.UserData.jabatan !== 'staff_surat_keluar') {
-                    throw createHttpError(StatusCodes.UNAUTHORIZED, 'User do not have access');
-                }
                 const templateSurat = await template_surats.findOne({
                     where: {
                         tipe_surat: tipe_template_surat,
@@ -146,9 +140,6 @@ class SuratController {
                     nik_karyawan: nik_karyawan,
                 });
             } else if (tipe_template_surat === 'kerjasama') {
-                if (req.UserData.jabatan !== 'staff_surat_keluar') {
-                    throw createHttpError(StatusCodes.UNAUTHORIZED, 'User do not have access');
-                }
                 const templateSurat = await template_surats.findOne({
                     where: {
                         tipe_surat: tipe_template_surat,
@@ -181,9 +172,6 @@ class SuratController {
                     tanggal_surat: tanggal_surat,
                 });
             } else if (tipe_template_surat === 'ceklab') {
-                if (req.UserData.jabatan !== 'staff_surat_masuk') {
-                    throw createHttpError(StatusCodes.UNAUTHORIZED, 'User do not have access');
-                }
                 const templateSurat = await template_surats.findOne({
                     where: {
                         tipe_surat: tipe_template_surat,
@@ -283,16 +271,11 @@ class SuratController {
                 where: {},
                 order: [['surat_id', 'desc']],
             };
-            if (req.UserData.jabatan === 'staff_surat_masuk') {
-                query.where.tipe_surat = 'masuk';
-            } else if (req.UserData.jabatan === 'staff_surat_keluar') {
-                query.where.tipe_surat = 'keluar';
-            }
-            if (req.UserData.jabatan === 'direktur_surat_masuk') {
+            if (req.UserData.jabatan === 'direktur_surat_masuk' || req.UserData.jabatan === 'staff_surat_masuk') {
                 query.where.tipe_template_surat = {
                     [Op.in]: ['kerjasama', 'ceklab']
                 }
-            } else if (req.UserData.jabatan === 'direktur_surat_keluar') {
+            } else if (req.UserData.jabatan === 'direktur_surat_keluar' || req.UserData.jabatan === 'staff_surat_keluar') {
                 query.where.tipe_template_surat = {
                     [Op.in]: ['magang', 'cuti']
                 }
