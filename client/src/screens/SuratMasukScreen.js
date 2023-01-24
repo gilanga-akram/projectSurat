@@ -22,6 +22,7 @@ import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-ta
 import SelectDropdown from 'react-native-select-dropdown';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import Share from 'react-native-share';
+import Pdf from 'react-native-pdf';
 
 const { width } = Dimensions.get('screen');
 
@@ -47,6 +48,8 @@ const SuratMasukScreen = ({ navigation }) => {
   const dropdownRefTipe = useRef({});
   const dropdownRefStatus = useRef({});
   const dropdownRefSifat = useRef({});
+  const [source, setSource] = useState({ uri: '' });
+  const [modalTipeSurat, setModalTipeSurat] = useState('');
 
   useEffect(() => {
     handleApi();
@@ -143,6 +146,8 @@ const SuratMasukScreen = ({ navigation }) => {
 
   const handleModal = async surat => {
     await handleApiSuratSingle(surat.surat_id);
+    setSource({...source, uri: surat.image_url});
+    setModalTipeSurat(surat.tipe_template_surat);
     setSuratModal(surat);
     setModalVisible(true)
     setSuratId(surat.surat_id);
@@ -333,23 +338,47 @@ const SuratMasukScreen = ({ navigation }) => {
             <View style={styles.centeredView}>
               <View style={styles.modalView}>
                 <ScrollView>
-                  <Text style={styles.modalText}>Tanggal Surat: </Text>
-                  <Text style={{...styles.modalText, fontWeight: 'bold'}}>{suratModal?.tanggal_surat} </Text>
-                  <Text style={styles.modalText}>Status Surat: </Text>
-                  <Text style={{...styles.modalText, fontWeight: 'bold'}}>{toTitleCase(suratModal.status_surat)} </Text>
-                  <Text style={styles.modalText}>Tipe Surat: </Text>
-                  <Text style={{...styles.modalText, fontWeight: 'bold'}}>{toTitleCase(suratModal.tipe_template_surat)} </Text>
-                  <Text style={styles.modalText}>Sifat Surat: </Text>
-                  <Text style={{...styles.modalText, fontWeight: 'bold'}}>{toTitleCase(suratModal.is_important ? 'Penting' : 'Tidak Penting')} </Text>
-                  <Text style={styles.modalText}>Nama Pengirim:  </Text>
-                  <Text style={{...styles.modalText, fontWeight: 'bold'}}>{suratModal?.nama_pengirim} </Text>
-                  <Text style={styles.modalText}>Nama Penerima:  </Text>
-                  <Text style={{...styles.modalText, fontWeight: 'bold'}}>{suratModal?.nama_penerima} </Text>
-                  <Text style={styles.modalText}>Isi Surat:</Text>
-                  <RenderHtml
-                    contentWidth={width}
-                    source={{ html: dataSuratSingle }}
-                  />
+                  {
+                    modalTipeSurat === 'magang' || modalTipeSurat === 'ceklab' ?
+                      <>
+                        <Pdf
+                          trustAllCerts={false}
+                          source={source}
+                          onLoadComplete={(numberOfPages,filePath) => {
+                              console.log(`Number of pages: ${numberOfPages}`);
+                          }}
+                          onPageChanged={(page,numberOfPages) => {
+                              console.log(`Current page: ${page}`);
+                          }}
+                          onError={(error) => {
+                              console.log(error);
+                          }}
+                          onPressLink={(uri) => {
+                              console.log(`Link pressed: ${uri}`);
+                          }}
+                          style={styles.pdf}/>
+                      </>
+                    :
+                    <>
+                      <Text style={styles.modalText}>Tanggal Surat: </Text>
+                      <Text style={{...styles.modalText, fontWeight: 'bold'}}>{suratModal?.tanggal_surat} </Text>
+                      <Text style={styles.modalText}>Status Surat: </Text>
+                      <Text style={{...styles.modalText, fontWeight: 'bold'}}>{toTitleCase(suratModal.status_surat)} </Text>
+                      <Text style={styles.modalText}>Tipe Surat: </Text>
+                      <Text style={{...styles.modalText, fontWeight: 'bold'}}>{toTitleCase(suratModal.tipe_template_surat)} </Text>
+                      <Text style={styles.modalText}>Sifat Surat: </Text>
+                      <Text style={{...styles.modalText, fontWeight: 'bold'}}>{toTitleCase(suratModal.is_important ? 'Penting' : 'Tidak Penting')} </Text>
+                      <Text style={styles.modalText}>Nama Pengirim:  </Text>
+                      <Text style={{...styles.modalText, fontWeight: 'bold'}}>{suratModal?.nama_pengirim} </Text>
+                      <Text style={styles.modalText}>Nama Penerima:  </Text>
+                      <Text style={{...styles.modalText, fontWeight: 'bold'}}>{suratModal?.nama_penerima} </Text>
+                      <Text style={styles.modalText}>Isi Surat:</Text>
+                      <RenderHtml
+                        contentWidth={width}
+                        source={{ html: dataSuratSingle }}
+                      />
+                    </>
+                  }
                   <Text style={styles.modalText}>Action Surat:</Text>
                   {
                     suratModal.status_surat !== 'dibuat' ? <></> : 
@@ -593,4 +622,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'black'
   },
+  pdf: {
+    flex:1,
+    width:Dimensions.get('window').width,
+    height:Dimensions.get('window').height,
+  }
 });

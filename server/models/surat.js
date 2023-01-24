@@ -44,6 +44,7 @@ module.exports = (sequelize, DataTypes) => {
     tanggal_mulai: DataTypes.DATE,
     tanggal_selesai: DataTypes.DATE,
     nik_karyawan: DataTypes.STRING,
+    image_url: DataTypes.STRING,
     created_at: DataTypes.DATE,
     updated_at: DataTypes.DATE,
   }, {

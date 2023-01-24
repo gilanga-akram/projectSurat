@@ -8,6 +8,7 @@ const {
 const moment = require('moment');
 moment.locale('id'); 
 const { Op } = require('sequelize');
+const serverUrl = require("../helpers/serverUrl");
 
 class SuratController {
     static async createSurat(req, res, next) {
@@ -34,47 +35,38 @@ class SuratController {
                 nik_karyawan,
             } = req.body;
             if (!tanggal_surat) throw createHttpError(StatusCodes.BAD_REQUEST, 'Tanggal Surat is Required');
-            if (is_important === undefined || is_important === null) throw createHttpError(StatusCodes.BAD_REQUEST, 'is_important is required');
+            if (is_important === undefined || is_important === null) {
+                is_important = false;
+            }
             // if ((is_important === true || is_important === 'true') && !deadline) {
             //     throw createHttpError(StatusCodes.BAD_REQUEST, 'Deadline required');
             // }
             let result = {};
-            if (tipe_template_surat === 'magang') {
+            if (tipe_template_surat === 'magang' || tipe_template_surat === 'ceklab') {
                 const templateSurat = await template_surats.findOne({
                     where: {
                         tipe_surat: tipe_template_surat,
                     },
                 });
+                console.log(req.file);
                 if (!templateSurat) throw createHttpError(StatusCodes.BAD_REQUEST, 'Tipe Template Surat Tidak Ada');
-                if (!nama_pengirim,
-                    !alamat_pengirim,
-                    !no_hp_pengirim,
-                    !email_pengirim,
-                    !tanggal_mulai,
-                    !tanggal_selesai,
-                    !nama_penerima,
-                    !alamat_penerima) {
-                        throw createHttpError(StatusCodes.BAD_REQUEST, 'Required All Fields');
-                    }
-                result = await surats.create({
-                    nama_pengirim: nama_pengirim,
-                    alamat_pengirim: alamat_pengirim,
-                    no_hp_pengirim: no_hp_pengirim,
-                    email_pengirim: email_pengirim,
-                    tanggal_mulai: tanggal_mulai,
-                    tanggal_selesai: tanggal_selesai,
-                    nama_penerima: nama_penerima,
-                    alamat_penerima: alamat_penerima,
+                const input = {
                     user_id: req.UserData.user_id,
                     status_surat: 'dibuat',
                     tipe_template_surat: tipe_template_surat,
                     is_important: is_important,
                     tipe_surat: 'masuk',
                     jenis_surat: 'external',
-                    deadline: deadline,
                     template_surat_id: templateSurat.template_surat_id,
                     tanggal_surat: tanggal_surat,
-                });
+                }
+                if (req.file) {
+                    input.image_url = serverUrl + req.file.path;
+                } else {
+                    console.log('server masukk ===')
+                    throw createHttpError(StatusCodes.BAD_REQUEST, 'file required');
+                }
+                result = await surats.create(input);
             } else if (tipe_template_surat === 'cuti') {
                 const templateSurat = await template_surats.findOne({
                     where: {
@@ -166,38 +158,6 @@ class SuratController {
                     tipe_template_surat: tipe_template_surat,
                     is_important: is_important,
                     tipe_surat: 'keluar',
-                    jenis_surat: 'external',
-                    deadline: deadline,
-                    template_surat_id: templateSurat.template_surat_id,
-                    tanggal_surat: tanggal_surat,
-                });
-            } else if (tipe_template_surat === 'ceklab') {
-                const templateSurat = await template_surats.findOne({
-                    where: {
-                        tipe_surat: tipe_template_surat,
-                    },
-                });
-                if (!templateSurat) throw createHttpError(StatusCodes.BAD_REQUEST, 'Tipe Template Surat Tidak Ada');
-                if (!nama_pengirim,
-                    !jabatan_pengirim,
-                    !alamat_pengirim,
-                    !nama_penerima,
-                    !alamat_penerima,
-                    !jabatan_penerima) {
-                        throw createHttpError(StatusCodes.BAD_REQUEST, 'Required All Fields');
-                    }
-                result = await surats.create({
-                    nama_pengirim: nama_pengirim,
-                    jabatan_pengirim: jabatan_pengirim,
-                    alamat_pengirim: alamat_pengirim,
-                    nama_penerima: nama_penerima,
-                    alamat_penerima: alamat_penerima,
-                    jabatan_penerima: jabatan_penerima,
-                    user_id: req.UserData.user_id,
-                    status_surat: 'dibuat',
-                    tipe_template_surat: tipe_template_surat,
-                    is_important: is_important,
-                    tipe_surat: 'masuk',
                     jenis_surat: 'external',
                     deadline: deadline,
                     template_surat_id: templateSurat.template_surat_id,

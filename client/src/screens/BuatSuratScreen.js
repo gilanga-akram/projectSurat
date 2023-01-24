@@ -20,6 +20,7 @@ import {
   import RenderHtml from 'react-native-render-html';
   import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
   import SelectDropdown from 'react-native-select-dropdown';
+  import DocumentPicker from 'react-native-document-picker';
   
   const { width } = Dimensions.get('screen');
   
@@ -52,6 +53,7 @@ import {
         tanggal_surat: '',
     });
     const [dataSuratSingle, setDataSuratSingle] = useState('');
+    const [singleFile, setSingleFile] = useState(null);
   
     useEffect(() => {
       setTokenData();
@@ -219,38 +221,82 @@ import {
     const handleCreateAPI = async () => {
       try {
         const token = await AsyncStorage.getItem('userToken');
+        const data = new FormData();
+        data.append('tipe_template_surat', tipeSurat === 'disposisi' ? 'ceklab' : tipeSurat);
+        data.append('nama_pengirim', value.nama_pengirim);
+        data.append('jabatan_pengirim', value.jabatan_pengirim);
+        data.append('alamat_pengirim', value.alamat_pengirim);
+        data.append('no_hp_pengirim', value.no_hp_pengirim);
+        data.append('email_pengirim', value.email_pengirim);
+        data.append('tanggal_mulai', value.tanggal_mulai);
+        data.append('tanggal_selesai', value.tanggal_selesai);
+        data.append('nama_penerima', value.nama_penerima);
+        data.append('alamat_penerima', value.alamat_penerima);
+        data.append('jabatan_penerima', value.jabatan_penerima);
+        data.append('alasan_cuti', value.alasan_cuti);
+        data.append('nik_karyawan', value.nik_karyawan);
+        data.append('tanggal_surat', value.tanggal_surat);
+        data.append('is_important', isImportant === 'iya' ? true : false);
+        if (tipeSurat === 'magang' || tipeSurat === 'disposisi') {
+          if (!singleFile) {
+            setErrMessage(err.response.data.msg);
+            setModalVisible(false);
+            setModalVisibleError(true);
+            return;
+          } else {
+            data.append('image_url', singleFile[0]);
+          }
+        }
         await axios({
-            method: 'POST',
-            url: `${host}/surat/create`,
-            headers: { token },
-            data: {
-                tipe_template_surat: tipeSurat === 'disposisi' ? 'ceklab' : tipeSurat,
-                nama_pengirim: value.nama_pengirim,
-                jabatan_pengirim: value.jabatan_pengirim,
-                alamat_pengirim: value.alamat_pengirim,
-                no_hp_pengirim: value.no_hp_pengirim,
-                email_pengirim: value.email_pengirim,
-                tanggal_mulai: value.tanggal_mulai,
-                tanggal_selesai: value.tanggal_selesai,
-                nama_penerima: value.nama_penerima,
-                alamat_penerima: value.alamat_penerima,
-                jabatan_penerima: value.jabatan_penerima,
-                alasan_cuti: value.alasan_cuti,
-                nik_karyawan: value.nik_karyawan,
-                tanggal_surat: value.tanggal_surat,
-                is_important: isImportant === 'iya' ? true : false,
-            },
+          method: 'POST',
+          url: `${host}/surat/create`,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Accept: 'application/json',
+            token: token,
+          },
+          data: data,
         });
         setModalVisible(false);
         navigation.navigate('Home');
       } catch (err) {
         if (err.response) {
-          if (err.response.data.msg === 'Jatah Cuti Sudah Habis') {
-            console.log('masukk');
+          if (err.response.data?.msg === 'Jatah Cuti Sudah Habis') {
             setErrMessage(err.response.data.msg);
             setModalVisible(false);
             setModalVisibleError(true);
           }
+        }
+      }
+    }
+
+    const selectFile = async () => {
+      // Opening Document Picker to select one file
+      try {
+        const res = await DocumentPicker.pick({
+          // Provide which type of file you want user to pick
+          type: [DocumentPicker.types.allFiles],
+          // There can me more options as well
+          // DocumentPicker.types.allFiles
+          // DocumentPicker.types.images
+          // DocumentPicker.types.plainText
+          // DocumentPicker.types.audio
+          // DocumentPicker.types.pdf
+        });
+        // Printing the log realted to the file
+        console.log('res : ' + JSON.stringify(res));
+        // Setting the state to show single file attributes
+        setSingleFile(res);
+      } catch (err) {
+        setSingleFile(null);
+        // Handling any exception (If any)
+        if (DocumentPicker.isCancel(err)) {
+          // If user canceled the document selection
+          alert('Canceled');
+        } else {
+          // For Unknown Error
+          alert('Unknown Error: ' + JSON.stringify(err));
+          throw err;
         }
       }
     }
@@ -385,72 +431,24 @@ import {
             <ScrollView>
                 {/* CODE DISINI */}
                 {
-                tipeSurat === 'magang' ?
+                (tipeSurat === 'magang' || tipeSurat === 'disposisi') ?
                     <View style={{marginHorizontal: 16, marginTop: 20}}>
-                        <Text style={{color: 'black'}}>Nama Pengirim</Text>
-                        <TextInput
-                        placeholder="Nama Pengirim"
-                        autoCapitalize="none"
-                        style={styles.inputSize}
-                        onChangeText={text => setValue({...value, nama_pengirim: text})}
-                        value={value.nama_pengirim}
-                        />
-                        <Text style={{color: 'black'}}>Alamat Pengirim</Text>
-                        <TextInput
-                        placeholder="Alamat Pengirim"
-                        autoCapitalize="none"
-                        style={styles.inputSize}
-                        onChangeText={text => setValue({...value, alamat_pengirim: text})}
-                        value={value.alamat_pengirim}
-                        />
-                        <Text style={{color: 'black'}}>No HP Pengirim</Text>
-                        <TextInput
-                        placeholder="No HP Pengirim"
-                        autoCapitalize="none"
-                        style={styles.inputSize}
-                        onChangeText={text => setValue({...value, no_hp_pengirim: text})}
-                        value={value.no_hp_pengirim}
-                        />
-                        <Text style={{color: 'black'}}>Email Pengirim</Text>
-                        <TextInput
-                        placeholder="Email Pengirim"
-                        autoCapitalize="none"
-                        style={styles.inputSize}
-                        onChangeText={text => setValue({...value, email_pengirim: text})}
-                        value={value.email_pengirim}
-                        />
-                        <Text style={{color: 'black'}}>Tanggal Mulai</Text>
-                        <TextInput
-                        placeholder="Tanggal Mulai"
-                        autoCapitalize="none"
-                        style={styles.inputSize}
-                        onChangeText={text => setValue({...value, tanggal_mulai: text})}
-                        value={value.tanggal_mulai}
-                        />
-                        <Text style={{color: 'black'}}>Tanggal Selesai</Text>
-                        <TextInput
-                        placeholder="Tanggal Selesai"
-                        autoCapitalize="none"
-                        style={styles.inputSize}
-                        onChangeText={text => setValue({...value, tanggal_selesai: text})}
-                        value={value.tanggal_selesai}
-                        />
-                        <Text style={{color: 'black'}}>Nama Penerima</Text>
-                        <TextInput
-                        placeholder="Nama Penerima"
-                        autoCapitalize="none"
-                        style={styles.inputSize}
-                        onChangeText={text => setValue({...value, nama_penerima: text})}
-                        value={value.nama_penerima}
-                        />
-                        <Text style={{color: 'black'}}>Alamat Penerima</Text>
-                        <TextInput
-                        placeholder="Alamat Penerima"
-                        autoCapitalize="none"
-                        style={styles.inputSize}
-                        onChangeText={text => setValue({...value, alamat_penerima: text})}
-                        value={value.alamat_penerima}
-                        />
+                        {/* upload file */}
+                        {singleFile != null ? (
+                          <Text style={styles.textUploadStyle}>
+                            File Uploaded
+                          </Text>
+                        ) : 
+                          <Text style={styles.textUploadStyle}>
+                          Upload File
+                          </Text>
+                        }
+                        <TouchableOpacity
+                          style={styles.buttonStyle}
+                          activeOpacity={0.5}
+                          onPress={selectFile}>
+                          <Text style={styles.buttonTextStyle}>Select File</Text>
+                        </TouchableOpacity>
                         <Text style={{color: 'black'}}>Tanggal Surat</Text>
                         <TextInput
                         placeholder="Tanggal Surat"
@@ -626,65 +624,6 @@ import {
                         value={value.tanggal_surat}
                         />
                     </View>
-                : tipeSurat === 'disposisi' ? 
-                    <View style={{marginHorizontal: 16, marginTop: 20}}>
-                        <Text style={{color: 'black'}}>Nama Pengirim</Text>
-                        <TextInput
-                        placeholder="Nama Pengirim"
-                        autoCapitalize="none"
-                        style={styles.inputSize}
-                        onChangeText={text => setValue({...value, nama_pengirim: text})}
-                        value={value.nama_pengirim}
-                        />
-                        <Text style={{color: 'black'}}>Jabatan Pengirim</Text>
-                        <TextInput
-                        placeholder="Jabatan Pengirim"
-                        autoCapitalize="none"
-                        style={styles.inputSize}
-                        onChangeText={text => setValue({...value, jabatan_pengirim: text})}
-                        value={value.jabatan_pengirim}
-                        />
-                        <Text style={{color: 'black'}}>Alamat Pengirim</Text>
-                        <TextInput
-                        placeholder="Alamat Pengirim"
-                        autoCapitalize="none"
-                        style={styles.inputSize}
-                        onChangeText={text => setValue({...value, alamat_pengirim: text})}
-                        value={value.alamat_pengirim}
-                        />
-                        <Text style={{color: 'black'}}>Nama Penerima</Text>
-                        <TextInput
-                        placeholder="Nama Penerima"
-                        autoCapitalize="none"
-                        style={styles.inputSize}
-                        onChangeText={text => setValue({...value, nama_penerima: text})}
-                        value={value.nama_penerima}
-                        />
-                        <Text style={{color: 'black'}}>Alamat Penerima</Text>
-                        <TextInput
-                        placeholder="Alamat Penerima"
-                        autoCapitalize="none"
-                        style={styles.inputSize}
-                        onChangeText={text => setValue({...value, alamat_penerima: text})}
-                        value={value.alamat_penerima}
-                        />
-                        <Text style={{color: 'black'}}>Jabatan Penerima</Text>
-                        <TextInput
-                        placeholder="Jabatan Penerima"
-                        autoCapitalize="none"
-                        style={styles.inputSize}
-                        onChangeText={text => setValue({...value, jabatan_penerima: text})}
-                        value={value.jabatan_penerima}
-                        />
-                        <Text style={{color: 'black'}}>Tanggal Surat</Text>
-                        <TextInput
-                        placeholder="Tanggal Surat"
-                        autoCapitalize="none"
-                        style={styles.inputSize}
-                        onChangeText={text => setValue({...value, tanggal_surat: text})}
-                        value={value.tanggal_surat}
-                        />
-                    </View>
                 :
                     <View style={{ alignItems: 'center', marginTop: 50 }}>
                         <Text style={{color: 'black'}}>Silahkan Pilih Tipe Surat</Text>
@@ -702,7 +641,13 @@ import {
                         </TouchableOpacity> :
                         <TouchableOpacity
                             style={{...styles.bottonSize, marginBottom: 50, backgroundColor: 'green'}}
-                            onPress={() => handleBuatSurat()}
+                            onPress={() => {
+                              if (tipeSurat === 'magang' || tipeSurat === 'disposisi') {
+                                handleCreateAPI();
+                              } else {
+                                handleBuatSurat();
+                              }
+                            }}
                         >
                             <Text style={styles.textButton}>Buat Surat</Text>
                         </TouchableOpacity> : <></>
@@ -805,6 +750,32 @@ import {
       marginBottom: 15,
       textAlign: 'center',
       color: 'black'
+    },
+    buttonStyle: {
+      backgroundColor: '#307ecc',
+      borderWidth: 0,
+      color: '#FFFFFF',
+      borderColor: '#307ecc',
+      height: 40,
+      alignItems: 'center',
+      borderRadius: 30,
+      marginLeft: 35,
+      marginRight: 35,
+      marginTop: 15,
+      marginBottom: 15,
+    },
+    buttonTextStyle: {
+      color: '#FFFFFF',
+      paddingVertical: 10,
+      fontSize: 16,
+    },
+    textUploadStyle: {
+      backgroundColor: '#fff',
+      fontSize: 15,
+      marginTop: 16,
+      marginLeft: 35,
+      marginRight: 35,
+      textAlign: 'center',
     },
   });
   

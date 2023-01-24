@@ -11,25 +11,41 @@ import {
   Modal,
   Pressable,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useState,useRef} from 'react';
 import {leftArrow} from '../assets';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import host from '../utilities/host';
+import SelectDropdown from 'react-native-select-dropdown';
+import { toTitleCase, titleToSnakeCase } from '../utilities/snakeCaseToTitleCase';
 
 const {height, width} = Dimensions.get('screen');
 
-const RegisterScreen = ({navigation}) => {
+const RegisterScreen = ({navigation, route}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [value, setValue] = useState({
-    nama: '',
+    fullname: '',
     username: '',
-    email: '',
-    role: 'helper',
+    jabatan: 'direktur_surat_masuk',
   });
+  const dropdownRefTipe = useRef({});
+  const [jabatanDropdown, setJabatanDropdown] = useState(route.params.dropdownList);
+  const [jabatan, setJabatan] = useState('');
 
   const registerUser = async () => {
     try {
+      if (jabatan === 'Direktur UPT Labkesda') {
+        setValue({...value, jabatan: 'direktur_surat_masuk'});
+      } else if (jabatan === 'Kepala Subbag Tata Usaha') {
+        setValue({...value, jabatan: 'direktur_surat_keluar'});
+      } else if (jabatan === 'Administrasi Umum') {
+        setValue({...value, jabatan: 'staff_surat_masuk'});
+      } else if (jabatan === 'Staff') {
+        setValue({...value, jabatan: 'staff_surat_keluar'});
+      } else {
+        console.log('isi jabatan');
+        return;
+      }
       const token = await AsyncStorage.getItem('userToken');
       await axios({
         method: 'POST',
@@ -106,12 +122,12 @@ const RegisterScreen = ({navigation}) => {
           </View>
           <ScrollView>
             <View style={{marginHorizontal: 16, marginTop: 20}}>
-              <Text style={{color: 'black'}}>nama</Text>
+              <Text style={{color: 'black'}}>Fullname</Text>
               <TextInput
-                placeholder="nama"
+                placeholder="fullname"
                 autoCapitalize="none"
                 style={styles.inputSize}
-                onChangeText={text => setValue({...value, nama: text})}
+                onChangeText={text => setValue({...value, fullname: text})}
                 value={value.nama}
               />
             </View>
@@ -126,13 +142,15 @@ const RegisterScreen = ({navigation}) => {
               />
             </View>
             <View style={{marginHorizontal: 16, marginTop: 10}}>
-              <Text style={{color: 'black'}}>Email</Text>
-              <TextInput
-                placeholder="email"
-                autoCapitalize="none"
-                style={styles.inputSize}
-                onChangeText={text => setValue({...value, email: text})}
-                value={value.email}
+              <Text style={{color: 'black'}}>Jabatan</Text>
+              <SelectDropdown
+                ref={dropdownRefTipe}
+                defaultValueByIndex={0}
+                data={jabatanDropdown}
+                onSelect={(selectedItem) => {
+                  setJabatan(selectedItem);
+                }}
+                buttonStyle={{ width: 330 }}
               />
             </View>
           </ScrollView>

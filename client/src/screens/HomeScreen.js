@@ -99,6 +99,34 @@ const Home = ({navigation}) => {
                     Menu User
                   </Text>
                 </TouchableOpacity>
+                <TouchableOpacity
+                  style={{
+                    alignItems: 'center',
+                    width: width - 32,
+                    height: 120,
+                    borderWidth: 1,
+                    borderRadius: 10,
+                    borderColor: '#3AB4F2',
+                    marginTop: 20,
+                    flexDirection: 'row',
+                  }}
+                  onPress={() => navigation.navigate('Register', {
+                    dropdownList: ['Direktur UPT Labkesda', 'Kepala Subbag Tata Usaha', 'Administrasi Umum', 'Staff']
+                  })}
+                >
+                  <Image source={findStuff} style={{width: 100, height: 100}} />
+                  <Text
+                    style={{
+                      color: '#3AB4F2',
+                      fontSize: 28,
+                      fontWeight: '700',
+                      marginTop: 10,
+                      marginLeft: 20,
+                    }}
+                  >
+                    Register User
+                  </Text>
+                </TouchableOpacity>
               </>
             ) : role === 'direktur_surat_masuk' || role === 'staff_surat_masuk' ? (
               <>

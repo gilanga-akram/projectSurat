@@ -81,6 +81,9 @@ module.exports = {
       nik_karyawan: {
         type: Sequelize.STRING
       },
+      image_url: {
+        type: Sequelize.STRING
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE
