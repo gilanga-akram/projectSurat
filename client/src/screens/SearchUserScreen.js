@@ -9,6 +9,7 @@ import {
   Dimensions,
   Modal,
   Pressable,
+  ScrollView,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { leftArrow } from '../assets';
@@ -389,7 +390,11 @@ const SearchScreen = ({ navigation }) => {
               <Text style={{ fontWeight: 'bold', color: 'black' }}>Action</Text>
             </View>
           </View>
-          {dataUser.length > 0 ? handleTable() : <></>}
+          <View style={{marginHorizontal: 16, marginTop: 20, height:400}}>
+            <ScrollView>
+              {dataUser.length > 0 ? handleTable() : <></>}
+            </ScrollView>
+          </View>
         </View>
       </View>
     </SafeAreaView>

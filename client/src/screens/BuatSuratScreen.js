@@ -395,7 +395,7 @@ import {
               </TouchableOpacity>
               <View>
                 <Text style={{ fontWeight: '700', fontSize: 20, color: '#3AB4F2' }}>
-                  Buat Surat { role === 'staff_surat_masuk' ? 'Masuk' : 'Keluar' }
+                  Input Surat { role === 'staff_surat_masuk' ? 'Masuk' : 'Keluar' }
                 </Text>
               </View>
             </View>

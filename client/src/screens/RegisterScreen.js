@@ -31,26 +31,32 @@ const RegisterScreen = ({navigation, route}) => {
   const dropdownRefTipe = useRef({});
   const [jabatanDropdown, setJabatanDropdown] = useState(route.params.dropdownList);
   const [jabatan, setJabatan] = useState('');
-
+ 
   const registerUser = async () => {
     try {
+      let newJabatan = ''
       if (jabatan === 'Direktur UPT Labkesda') {
-        setValue({...value, jabatan: 'direktur_surat_masuk'});
+        newJabatan = 'direktur_surat_masuk'
       } else if (jabatan === 'Kepala Subbag Tata Usaha') {
-        setValue({...value, jabatan: 'direktur_surat_keluar'});
+        newJabatan = 'direktur_surat_keluar'
       } else if (jabatan === 'Administrasi Umum') {
-        setValue({...value, jabatan: 'staff_surat_masuk'});
+        newJabatan = 'staff_surat_masuk'
       } else if (jabatan === 'Staff') {
-        setValue({...value, jabatan: 'staff_surat_keluar'});
+        newJabatan = 'staff_surat_keluar'
       } else {
         console.log('isi jabatan');
         return;
       }
+      const body = {
+        ...value, 
+        jabatan: newJabatan
+      }
+      
       const token = await AsyncStorage.getItem('userToken');
       await axios({
         method: 'POST',
         url: host + '/users/register',
-        data: value,
+        data: body,
         headers: {token},
       });
       setModalVisible(true);

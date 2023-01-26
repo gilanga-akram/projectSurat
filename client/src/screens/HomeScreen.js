@@ -180,7 +180,7 @@ const Home = ({navigation}) => {
                         marginLeft: 20,
                       }}
                     >
-                      Buat Surat
+                      Input Surat
                     </Text>
                   </TouchableOpacity>
                 </> : <></> }
