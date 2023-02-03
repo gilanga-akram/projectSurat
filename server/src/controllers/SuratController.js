@@ -225,7 +225,7 @@ class SuratController {
                 status_surat,
             } = req.query;
             if (!page || page < 1) page = 1;
-            if (!resPerPage) resPerPage = 10;
+            if (!resPerPage) resPerPage = 100;
             const offset = resPerPage * page - resPerPage;
             let query = {
                 where: {},
@@ -236,8 +236,12 @@ class SuratController {
                     [Op.in]: ['magang', 'ceklab']
                 }
             } else if (req.UserData.jabatan === 'direktur_surat_keluar' || req.UserData.jabatan === 'staff_surat_keluar') {
+                const temp = ['kerjasama', 'cuti'];
+                if (req.UserData.jabatan === 'staff_surat_keluar') {
+                    temp.push('ceklab');
+                }
                 query.where.tipe_template_surat = {
-                    [Op.in]: ['kerjasama', 'cuti']
+                    [Op.in]: temp
                 }
             }
             if (tipe_template_surat) {
@@ -258,7 +262,15 @@ class SuratController {
             const numOfResult = await surats.count(query);
             query.limit = resPerPage;
             query.offset = offset;
-            const allDataSurat = await surats.findAll(query);
+            const tempDataSurat = await surats.findAll(query);
+            const allDataSurat = [];
+            tempDataSurat.map(async (surat) => {
+                if (surat.tipe_template_surat === 'cuti' && surat.user_id !== req.UserData.user_id) { 
+                    return false;
+                } else {
+                    allDataSurat.push(surat);
+                }
+            });
             res.status(200).json({
                 msg: 'Success',
                 allDataSurat: allDataSurat,

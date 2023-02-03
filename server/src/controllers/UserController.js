@@ -213,11 +213,15 @@ class UserController {
 	static async listCuti(req, res, next) {
 		try {
 			let result = []
+			const where = {
+				tipe_template_surat: 'cuti',
+				status_surat: 'disetujui',
+			}
+			if (req.query.nik) {
+				where.nik_karyawan = { [Op.iLike]: `%${req.query.nik}%` };
+			}
 			const dataSurat = await surats.findAll({
-				where: {
-					tipe_template_surat: 'cuti',
-					status_surat: 'disetujui',
-				},
+				where: where,
 			});
 			if (!dataSurat) {
 				res.status(StatusCodes.OK).json([]);
