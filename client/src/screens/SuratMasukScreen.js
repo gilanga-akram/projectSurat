@@ -370,6 +370,8 @@ const SuratMasukScreen = ({ navigation }) => {
                       <Text style={{...styles.modalText, fontWeight: 'bold'}}>{suratModal?.nama_pengirim} </Text>
                       <Text style={styles.modalText}>Nama Penerima:  </Text>
                       <Text style={{...styles.modalText, fontWeight: 'bold'}}>{suratModal?.nama_penerima} </Text>
+                      <Text style={styles.modalText}>Perihal:  </Text>
+                      <Text style={{...styles.modalText, fontWeight: 'bold'}}>{suratModal?.perihal} </Text>
                       <Text style={styles.modalText}>Isi Surat:</Text>
                       <RenderHtml
                         contentWidth={width}

@@ -51,6 +51,7 @@ import {
         alasan_cuti: '',
         nik_karyawan: '',
         tanggal_surat: '',
+        perihal: '',
     });
     const [dataSuratSingle, setDataSuratSingle] = useState('');
     const [singleFile, setSingleFile] = useState(null);
@@ -101,17 +102,28 @@ import {
             //   setModalVisibleError(true);
             //   return 'handle modal error';
             // }
-            const reg = /^\d+$/;
+            const reg = /^(0?[1-9]|[12][0-9]|3[01])[\-\-](0?[1-9]|1[012])[\-\-]\d{4}$/;
+            const testTanggal = reg.test(value.tanggal_surat);
+            if (!testTanggal) {
+              setErrMessage('Format Tanggal Surat Salah');
+              setModalVisibleError(true);
+              return false;
+            }
+            if (!value.perihal) {
+              setErrMessage('Isi Semua Data');
+              setModalVisibleError(true);
+              return;
+            }
             if (tipeSurat === 'magang') {
                 setIsImportant('tidak')
-                if (!value.nama_pengirim,
-                    !value.alamat_pengirim,
-                    !value.no_hp_pengirim,
-                    !value.email_pengirim,
-                    !value.tanggal_mulai,
-                    !value.tanggal_selesai,
-                    !value.nama_penerima,
-                    !value.alamat_penerima,
+                if (!value.nama_pengirim ||
+                    !value.alamat_pengirim ||
+                    !value.no_hp_pengirim ||
+                    !value.email_pengirim ||
+                    !value.tanggal_mulai ||
+                    !value.tanggal_selesai ||
+                    !value.nama_penerima ||
+                    !value.alamat_penerima ||
                     !value.tanggal_surat) {
                       setErrMessage('Isi Semua Data');
                       setModalVisibleError(true);
@@ -143,17 +155,17 @@ import {
                   ...value,
                   nama_pengirim: nama,
                 });
-                if (!value.jabatan_pengirim,
-                    !value.alamat_pengirim,
-                    !value.no_hp_pengirim,
-                    !value.email_pengirim,
-                    !value.tanggal_mulai,
-                    !value.tanggal_selesai,
-                    !value.nama_penerima,
-                    !value.alamat_penerima,
-                    !value.jabatan_penerima,
-                    !value.alasan_cuti,
-                    !value.nik_karyawan,
+                if (!value.jabatan_pengirim ||
+                    !value.alamat_pengirim ||
+                    !value.no_hp_pengirim ||
+                    !value.email_pengirim ||
+                    !value.tanggal_mulai ||
+                    !value.tanggal_selesai ||
+                    !value.nama_penerima ||
+                    !value.alamat_penerima ||
+                    !value.jabatan_penerima ||
+                    !value.alasan_cuti ||
+                    !value.nik_karyawan ||
                     !value.tanggal_surat) {
                       setErrMessage('Isi Semua Data');
                       setModalVisibleError(true);
@@ -185,12 +197,12 @@ import {
                 setModalVisible(true);
             }else if (tipeSurat === 'kerjasama' || tipeSurat === 'disposisi') {
               setIsImportant('iya')
-              if (!value.nama_pengirim,
-                  !value.jabatan_pengirim,
-                  !value.alamat_pengirim,
-                  !value.nama_penerima,
-                  !value.alamat_penerima,
-                  !value.jabatan_penerima,
+              if (!value.nama_pengirim ||
+                  !value.jabatan_pengirim ||
+                  !value.alamat_pengirim ||
+                  !value.nama_penerima ||
+                  !value.alamat_penerima ||
+                  !value.jabatan_penerima ||
                   !value.tanggal_surat) {
                     setErrMessage('Isi Semua Data');
                     setModalVisibleError(true);
@@ -214,6 +226,9 @@ import {
               });
               setDataSuratSingle(data.isiSurat);
               setModalVisible(true);
+            } else {
+              setErrMessage('Pilih Tipe Surat');
+              setModalVisibleError(true);
             }
         } catch (err) {
             console.log(err);
@@ -246,6 +261,7 @@ import {
         data.append('alasan_cuti', value.alasan_cuti);
         data.append('nik_karyawan', value.nik_karyawan);
         data.append('tanggal_surat', value.tanggal_surat);
+        data.append('perihal', value.perihal);
         data.append('is_important', isImportant === 'iya' ? true : false);
         if (tipeSurat === 'magang' || tipeSurat === 'disposisi') {
           if (!singleFile) {
@@ -459,13 +475,21 @@ import {
                           onPress={selectFile}>
                           <Text style={styles.buttonTextStyle}>Select File</Text>
                         </TouchableOpacity>
-                        <Text style={{color: 'black'}}>Tanggal Surat</Text>
+                        <Text style={{color: 'black'}}>Tanggal Surat (DD-MM-YYYY)</Text>
                         <TextInput
                         placeholder="Tanggal Surat"
                         autoCapitalize="none"
                         style={styles.inputSize}
                         onChangeText={text => setValue({...value, tanggal_surat: text})}
                         value={value.tanggal_surat}
+                        />
+                        <Text style={{color: 'black'}}>Perihal</Text>
+                        <TextInput
+                        placeholder="Perihal Surat"
+                        autoCapitalize="none"
+                        style={styles.inputSize}
+                        onChangeText={text => setValue({...value, perihal: text})}
+                        value={value.perihal}
                         />
                     </View>
                 : tipeSurat === 'cuti' ? 
@@ -558,13 +582,21 @@ import {
                         onChangeText={text => setValue({...value, nik_karyawan: text})}
                         value={value.nik_karyawan}
                         />
-                        <Text style={{color: 'black'}}>Tanggal Surat</Text>
+                        <Text style={{color: 'black'}}>Tanggal Surat (DD-MM-YYYY)</Text>
                         <TextInput
                         placeholder="Tanggal Surat"
                         autoCapitalize="none"
                         style={styles.inputSize}
                         onChangeText={text => setValue({...value, tanggal_surat: text})}
                         value={value.tanggal_surat}
+                        />
+                        <Text style={{color: 'black'}}>Perihal</Text>
+                        <TextInput
+                        placeholder="Perihal Surat"
+                        autoCapitalize="none"
+                        style={styles.inputSize}
+                        onChangeText={text => setValue({...value, perihal: text})}
+                        value={value.perihal}
                         />
                     </View>
                 : tipeSurat === 'kerjasama' ? 
@@ -617,13 +649,21 @@ import {
                         onChangeText={text => setValue({...value, jabatan_penerima: text})}
                         value={value.jabatan_penerima}
                         />
-                        <Text style={{color: 'black'}}>Tanggal Surat</Text>
+                        <Text style={{color: 'black'}}>Tanggal Surat (DD-MM-YYYY)</Text>
                         <TextInput
                         placeholder="Tanggal Surat"
                         autoCapitalize="none"
                         style={styles.inputSize}
                         onChangeText={text => setValue({...value, tanggal_surat: text})}
                         value={value.tanggal_surat}
+                        />
+                        <Text style={{color: 'black'}}>Perihal</Text>
+                        <TextInput
+                        placeholder="Perihal Surat"
+                        autoCapitalize="none"
+                        style={styles.inputSize}
+                        onChangeText={text => setValue({...value, perihal: text})}
+                        value={value.perihal}
                         />
                     </View>
                 :

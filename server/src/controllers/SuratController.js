@@ -33,6 +33,7 @@ class SuratController {
                 tanggal_mulai,
                 tanggal_selesai,
                 nik_karyawan,
+                perihal,
             } = req.body;
             if (!tanggal_surat) throw createHttpError(StatusCodes.BAD_REQUEST, 'Tanggal Surat is Required');
             if (is_important === undefined || is_important === null) {
@@ -59,6 +60,7 @@ class SuratController {
                     jenis_surat: 'external',
                     template_surat_id: templateSurat.template_surat_id,
                     tanggal_surat: tanggal_surat,
+                    perihal: perihal,
                 }
                 if (req.file) {
                     input.image_url = serverUrl + req.file.path;
@@ -130,6 +132,7 @@ class SuratController {
                     template_surat_id: templateSurat.template_surat_id,
                     tanggal_surat: tanggal_surat,
                     nik_karyawan: nik_karyawan,
+                    perihal: perihal,
                 });
             } else if (tipe_template_surat === 'kerjasama') {
                 const templateSurat = await template_surats.findOne({
@@ -162,6 +165,7 @@ class SuratController {
                     deadline: deadline,
                     template_surat_id: templateSurat.template_surat_id,
                     tanggal_surat: tanggal_surat,
+                    perihal: perihal,
                 });
             } else {
                 throw createHttpError(StatusCodes.BAD_REQUEST, 'Tipe Template Surat Tidak Ada');
