@@ -54,17 +54,20 @@ import {
     });
     const [dataSuratSingle, setDataSuratSingle] = useState('');
     const [singleFile, setSingleFile] = useState(null);
+    const [nama, setNama] = useState();
   
     useEffect(() => {
       setTokenData();
       dropdownRefTipe.current.reset();
-      dropdownRefIsImportant.current.reset();
+      // dropdownRefIsImportant.current.reset();
     }, []);
   
     const setTokenData = async () => {
       const Role = await AsyncStorage.getItem('userRole');
+      const Nama = await AsyncStorage.getItem('userName');
       if (Role !== null) {
         setRole(Role);
+        setNama(Nama);
       }
     }
   
@@ -93,12 +96,14 @@ import {
     const handleBuatSurat = async () => {
         try {
             setLoading(true);
-            if (!isImportant) {
-              setErrMessage('Surat Penting atau Tidak Wajib Diisi');
-              setModalVisibleError(true);
-              return 'handle modal error';
-            }
+            // if (!isImportant) {
+            //   setErrMessage('Surat Penting atau Tidak Wajib Diisi');
+            //   setModalVisibleError(true);
+            //   return 'handle modal error';
+            // }
+            const reg = /^\d+$/;
             if (tipeSurat === 'magang') {
+                setIsImportant('tidak')
                 if (!value.nama_pengirim,
                     !value.alamat_pengirim,
                     !value.no_hp_pengirim,
@@ -133,8 +138,12 @@ import {
                 setDataSuratSingle(data.isiSurat);
                 setModalVisible(true);
             } else if (tipeSurat === 'cuti') {
-                if (!value.nama_pengirim,
-                    !value.jabatan_pengirim,
+                setIsImportant('tidak')
+                setValue({
+                  ...value,
+                  nama_pengirim: nama,
+                });
+                if (!value.jabatan_pengirim,
                     !value.alamat_pengirim,
                     !value.no_hp_pengirim,
                     !value.email_pengirim,
@@ -157,7 +166,7 @@ import {
                     headers: { token },
                     data: {
                         tipe_surat: 'cuti',
-                        nama_pengirim: value.nama_pengirim,
+                        nama_pengirim: nama,
                         jabatan_pengirim: value.jabatan_pengirim,
                         alamat_pengirim: value.alamat_pengirim,
                         no_hp_pengirim: value.no_hp_pengirim,
@@ -175,6 +184,7 @@ import {
                 setDataSuratSingle(data.isiSurat);
                 setModalVisible(true);
             }else if (tipeSurat === 'kerjasama' || tipeSurat === 'disposisi') {
+              setIsImportant('iya')
               if (!value.nama_pengirim,
                   !value.jabatan_pengirim,
                   !value.alamat_pengirim,
@@ -411,7 +421,7 @@ import {
                 }}
               />
             </View>
-            <View style={{ alignItems: 'center' }}>
+            {/* <View style={{ alignItems: 'center' }}>
               <Text style={{ color: 'black', fontWeight: 'bold' }}>Apakah Surat Termasuk Penting?:</Text>
               <SelectDropdown
                 ref={dropdownRefIsImportant}
@@ -421,7 +431,7 @@ import {
                   setIsImportant(titleToSnakeCase(selectedItem));
                 }}
               />
-            </View>
+            </View> */}
             <TouchableOpacity
               style={{...styles.bottonSize, backgroundColor: 'red'}}
               onPress={() => handleReset()}
@@ -460,14 +470,6 @@ import {
                     </View>
                 : tipeSurat === 'cuti' ? 
                     <View style={{marginHorizontal: 16, marginTop: 20}}>
-                        <Text style={{color: 'black'}}>Nama Pengirim</Text>
-                        <TextInput
-                        placeholder="Nama Pengirim"
-                        autoCapitalize="none"
-                        style={styles.inputSize}
-                        onChangeText={text => setValue({...value, nama_pengirim: text})}
-                        value={value.nama_pengirim}
-                        />
                         <Text style={{color: 'black'}}>Jabatan Pengirim</Text>
                         <TextInput
                         placeholder="Jabatan Pengirim"

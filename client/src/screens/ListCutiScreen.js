@@ -23,9 +23,10 @@ import {
   
   const ListCutiScreen = ({ navigation }) => {
     const [role, setRole] = useState();
-    const [tableHead, setTableHead] = useState(['Nama', 'NIK', 'Total Cuti']);
+    const [tableHead, setTableHead] = useState(['Nama', 'NIK', 'Total Cuti', 'Sisa Cuti']);
     const [tableData, setTableData] = useState([]);
-    const [widthArr, setWidthArr] = useState([150, 150, 150]);
+    const [widthArr, setWidthArr] = useState([150, 150, 150, 150]);
+    const [searchItem, setSearchItem] = useState('');
   
     useEffect(() => {
       handleApi();
@@ -59,10 +60,25 @@ import {
           data.nama_karyawan,
           data.nik_karyawan,
           data.jumlah_hari,
+          10 - Number(data.jumlah_hari),
         ];
       });
       setTableData(dataTemp);
     }
+
+    const handleSearch = async (reset) => {
+      try {
+        const token = await AsyncStorage.getItem('userToken');
+        const { data } = await axios({
+          method: 'GET',
+          url: `${host}/users/list-cuti?nik=${reset ? '' : searchItem}`,
+          headers: { token },
+        });
+        renderTableData(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
   
     return (
       <SafeAreaView>
@@ -96,6 +112,28 @@ import {
               </View>
             </View>
             
+            <TextInput
+              placeholder="NIK Karyawan"
+              autoCapitalize="none"
+              style={styles.inputSize}
+              onChangeText={text => setSearchItem(text)}
+              value={searchItem}
+            />
+            <TouchableOpacity
+              style={styles.bottonSize}
+              onPress={() => handleSearch()}
+            >
+              <Text style={styles.textButton}>Cari</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{...styles.bottonSize, backgroundColor: 'red'}}
+              onPress={() => {
+                setSearchItem('');
+                handleSearch(true);
+              }}
+            >
+              <Text style={styles.textButton}>Reset</Text>
+            </TouchableOpacity>
             <ScrollView horizontal={true} >
               <View style={styles.container}>
                 <Table borderStyle={{borderWidth: 4, borderColor: '#c8e1ff'}}>

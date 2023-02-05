@@ -35,9 +35,9 @@ const SuratMasukScreen = ({ navigation }) => {
   const [suratModal, setSuratModal] = useState({});
   const [suratId, setSuratId] = useState(0);
   const [role, setRole] = useState();
-  const [tableHead, setTableHead] = useState(['Tanggal Surat', 'Tipe Surat', 'Name Pengirim', 'Nama Penerima', 'Status Surat', 'Sifat Surat', 'Action']);
+  const [tableHead, setTableHead] = useState(['Tanggal Surat', 'Tipe Surat', 'Status Surat', 'Sifat Surat', 'Action']);
   const [tableData, setTableData] = useState([]);
-  const [widthArr, setWidthArr] = useState([150, 150, 150, 150, 150, 150, 150]);
+  const [widthArr, setWidthArr] = useState([150, 150, 150, 150, 150]);
   const [tipeSuratDropdown, setTipeSuratDropdown] = useState(['Magang', 'Cuti', 'Disposisi', 'Kerjasama']);
   const [tipeSurat, setTipeSurat] = useState('');
   const [statusSuratDropdown, setStatusSuratDropdown] = useState(['Dibuat', 'Disetujui', 'Ditolak']);
@@ -85,8 +85,6 @@ const SuratMasukScreen = ({ navigation }) => {
       return [
         data.tanggal_surat,
         toTitleCase(data.tipe_template_surat === 'ceklab' ? 'Disposisi' : data.tipe_template_surat),
-        data.nama_pengirim,
-        data.nama_penerima,
         toTitleCase(data.status_surat),
         data.is_important ? 'Penting' : 'Tidak Penting',
         <TouchableOpacity onPress={() => handleModal(data)}>
@@ -407,7 +405,7 @@ const SuratMasukScreen = ({ navigation }) => {
                         style={[styles.button, styles.buttonClose, { backgroundColor: 'orange', }]}
                         onPress={() => handlePrint()}
                       >
-                        <Text style={styles.textStyle}>Print Surat</Text>
+                        <Text style={styles.textStyle}>Download Surat</Text>
                       </Pressable>
                     </View> : <></>
                   }
@@ -509,7 +507,7 @@ const SuratMasukScreen = ({ navigation }) => {
             style={styles.bottonSize}
             onPress={() => handleSearch()}
           >
-            <Text style={styles.textButton}>Cari</Text>
+            <Text style={styles.textButton}>Filter</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={{...styles.bottonSize, backgroundColor: 'red'}}
