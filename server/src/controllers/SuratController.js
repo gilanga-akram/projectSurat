@@ -269,7 +269,7 @@ class SuratController {
             const tempDataSurat = await surats.findAll(query);
             const allDataSurat = [];
             tempDataSurat.map(async (surat) => {
-                if (surat.tipe_template_surat === 'cuti' && surat.user_id !== req.UserData.user_id) { 
+                if (surat.tipe_template_surat === 'cuti' && surat.user_id !== req.UserData.user_id && req.UserData.jabatan === 'staff_surat_keluar') { 
                     return false;
                 } else {
                     allDataSurat.push(surat);
