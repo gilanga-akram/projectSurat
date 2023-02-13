@@ -24,6 +24,7 @@ import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import Share from 'react-native-share';
 import Pdf from 'react-native-pdf';
 import DatePicker from 'react-native-date-picker';
+import * as moment from 'moment';
 
 const { width } = Dimensions.get('screen');
 
@@ -51,7 +52,7 @@ const SuratMasukScreen = ({ navigation }) => {
   const dropdownRefSifat = useRef({});
   const [source, setSource] = useState({ uri: '' });
   const [modalTipeSurat, setModalTipeSurat] = useState('');
-  const [date, setDate] = useState(null)
+  const [date, setDate] = useState(moment('0001-01-01', 'YYYY/MM/DD'))
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
@@ -124,7 +125,7 @@ const SuratMasukScreen = ({ navigation }) => {
       }
       if (statusSurat) search.push(`status_surat=${statusSurat}`);
       if (sifatSurat) search.push(`is_important=${sifatSurat}`);
-      if (date) {
+      if (date.format('YYYY') !== '0000') {
         const month = date.format('M');
         const day   = date.format('D');
         const year  = date.format('YYYY');
