@@ -258,6 +258,40 @@ class UserController {
 			next(err);
 		}
 	}
+
+	static async sisaCuti(req, res, next) {
+		try {
+			const userId = req.UserData.user_id;
+			let sisaCuti = 10;
+			let totalCuti = 0;
+			const suratData = await surats.findOne({
+				where: {
+					nik_karyawan: {
+						[Op.ne]: null,
+					},
+					user_id: userId,
+					tipe_template_surat: 'cuti',
+					status_surat: 'disetujui',
+				}
+			});
+			if (suratData) {
+				const nikKaryawan = suratData.nik_karyawan;
+				const cutiData = await cutis.findAll({
+					where: {
+						nik_karyawan: nikKaryawan,
+					}
+				});
+				totalCuti = cutiData.reduce((a, b) => a + (b.jumlah_hari || 0), 0);
+				sisaCuti = 10 - totalCuti;
+			}
+			res.status(StatusCodes.OK).json({
+				sisaCuti: sisaCuti,
+				totalCuti: totalCuti,
+			});
+		} catch (err) {
+			next(err);
+		}
+	}
 };
 
 module.exports = UserController;

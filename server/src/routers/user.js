@@ -11,5 +11,6 @@ router.put('/change-password', authentication, UserController.changePassword);
 router.put('/reset-password/:id', UserController.resetPassword);
 router.get('/forgot-password/:username', UserController.forgotPassword);
 router.get('/list-cuti', authentication, UserController.listCuti);
+router.get('/sisa-cuti', authentication, UserController.sisaCuti);
 
 module.exports = router;

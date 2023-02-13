@@ -50,6 +50,8 @@ const SuratMasukScreen = ({ navigation }) => {
   const dropdownRefSifat = useRef({});
   const [source, setSource] = useState({ uri: '' });
   const [modalTipeSurat, setModalTipeSurat] = useState('');
+  const [date, setDate] = useState(null)
+  const [open, setOpen] = useState(false)
 
   useEffect(() => {
     handleApi();
@@ -121,6 +123,12 @@ const SuratMasukScreen = ({ navigation }) => {
       }
       if (statusSurat) search.push(`status_surat=${statusSurat}`);
       if (sifatSurat) search.push(`is_important=${sifatSurat}`);
+      if (date) {
+        const month = date.format('M');
+        const day   = date.format('D');
+        const year  = date.format('YYYY');
+        search.push(`tanggal_surat=${day}-${month}-${year}`);
+      }
       if (search.length) search = search.join('&');
       else search = '';
       const token = await AsyncStorage.getItem('userToken');
@@ -139,6 +147,7 @@ const SuratMasukScreen = ({ navigation }) => {
     dropdownRefTipe.current.reset();
     dropdownRefStatus.current.reset();
     dropdownRefSifat.current.reset();
+    setDate(null);
     handleApi();
   };
 
@@ -339,6 +348,9 @@ const SuratMasukScreen = ({ navigation }) => {
                   {
                     modalTipeSurat === 'magang' || modalTipeSurat === 'ceklab' ?
                       <>
+                        <Text style={styles.modalText}>Perihal:  </Text>
+                        <Text style={{...styles.modalText, fontWeight: 'bold'}}>{suratModal?.perihal} </Text>
+                        <Text style={styles.modalText}>Isi Surat:</Text>
                         <Pdf
                           trustAllCerts={false}
                           source={source}
@@ -502,6 +514,19 @@ const SuratMasukScreen = ({ navigation }) => {
                 } else {
                   setSifatSurat(false);
                 }
+              }}
+            />
+            <Text style={{ color: 'black', fontWeight: 'bold' }}>Tanggal Surat:</Text>
+            <DatePicker
+              mode="date"
+              open={open}
+              date={date}
+              onConfirm={(date) => {
+                setOpen(false)
+                setDate(date)
+              }}
+              onCancel={() => {
+                setOpen(false)
               }}
             />
           </View>

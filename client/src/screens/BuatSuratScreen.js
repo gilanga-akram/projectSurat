@@ -56,12 +56,28 @@ import {
     const [dataSuratSingle, setDataSuratSingle] = useState('');
     const [singleFile, setSingleFile] = useState(null);
     const [nama, setNama] = useState();
+    const [sisaCuti, setSisaCuti] = useState(10);
   
     useEffect(() => {
       setTokenData();
+      getSisaCuti();
       dropdownRefTipe.current.reset();
       // dropdownRefIsImportant.current.reset();
     }, []);
+
+    const getSisaCuti = async () => {
+      try {
+        const token = await AsyncStorage.getItem('userToken');
+        const { data } = await axios({
+          method: 'GET',
+          url: `${host}/users/sisa-cuti`,
+          headers: { token },
+        });
+        setSisaCuti(data.sisaCuti);
+      } catch (error) {
+        console.log(error);
+      }
+    }
   
     const setTokenData = async () => {
       const Role = await AsyncStorage.getItem('userRole');
@@ -494,6 +510,13 @@ import {
                     </View>
                 : tipeSurat === 'cuti' ? 
                     <View style={{marginHorizontal: 16, marginTop: 20}}>
+                        <Text style={{color: 'black'}}>Sisa Cuti</Text>
+                        <TextInput
+                        autoCapitalize="none"
+                        style={styles.inputSize}
+                        editable={false}
+                        value={sisaCuti}
+                        />
                         <Text style={{color: 'black'}}>Jabatan Pengirim</Text>
                         <TextInput
                         placeholder="Jabatan Pengirim"

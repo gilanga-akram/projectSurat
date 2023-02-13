@@ -227,6 +227,7 @@ class SuratController {
                 jenis_surat,
                 is_important,
                 status_surat,
+                tanggal_surat,
             } = req.query;
             if (!page || page < 1) page = 1;
             if (!resPerPage) resPerPage = 100;
@@ -262,6 +263,9 @@ class SuratController {
             }
             if (status_surat) {
                 query.where.status_surat = status_surat;
+            }
+            if (tanggal_surat) {
+                query.where.tanggal_surat = tanggal_surat;
             }
             const numOfResult = await surats.count(query);
             query.limit = resPerPage;
