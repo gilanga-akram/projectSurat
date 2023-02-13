@@ -23,6 +23,7 @@ import SelectDropdown from 'react-native-select-dropdown';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import Share from 'react-native-share';
 import Pdf from 'react-native-pdf';
+import DatePicker from 'react-native-date-picker';
 
 const { width } = Dimensions.get('screen');
 
