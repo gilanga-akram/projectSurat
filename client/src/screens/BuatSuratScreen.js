@@ -510,13 +510,7 @@ import {
                     </View>
                 : tipeSurat === 'cuti' ? 
                     <View style={{marginHorizontal: 16, marginTop: 20}}>
-                        <Text style={{color: 'black'}}>Sisa Cuti</Text>
-                        <TextInput
-                        autoCapitalize="none"
-                        style={styles.inputSize}
-                        editable={false}
-                        value={sisaCuti}
-                        />
+                        <Text style={{color: 'black', marginBottom: 5}}>Sisa Cuti: {sisaCuti}</Text>
                         <Text style={{color: 'black'}}>Jabatan Pengirim</Text>
                         <TextInput
                         placeholder="Jabatan Pengirim"
