@@ -52,7 +52,7 @@ const SuratMasukScreen = ({ navigation }) => {
   const dropdownRefSifat = useRef({});
   const [source, setSource] = useState({ uri: '' });
   const [modalTipeSurat, setModalTipeSurat] = useState('');
-  const [date, setDate] = useState(moment('0001-01-01', 'YYYY/MM/DD'))
+  const [date, setDate] = useState(moment('0001-01-01', 'YYYY/MM/DD').format())
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
