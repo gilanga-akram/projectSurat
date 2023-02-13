@@ -10,6 +10,7 @@ import {
   Modal,
   Pressable,
   ScrollView,
+  Alert,
 } from 'react-native';
 import React, { useEffect, useState, useRef } from 'react';
 import { leftArrow } from '../assets';
@@ -23,8 +24,6 @@ import SelectDropdown from 'react-native-select-dropdown';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import Share from 'react-native-share';
 import Pdf from 'react-native-pdf';
-import DatePicker from 'react-native-date-picker';
-import * as moment from 'moment';
 
 const { width } = Dimensions.get('screen');
 
@@ -52,8 +51,7 @@ const SuratMasukScreen = ({ navigation }) => {
   const dropdownRefSifat = useRef({});
   const [source, setSource] = useState({ uri: '' });
   const [modalTipeSurat, setModalTipeSurat] = useState('');
-  const [date, setDate] = useState(moment('0001-01-01', 'YYYY/MM/DD').format())
-  const [open, setOpen] = useState(false)
+  const [searchItem, setSearchItem] = useState('');
 
   useEffect(() => {
     handleApi();
@@ -125,11 +123,14 @@ const SuratMasukScreen = ({ navigation }) => {
       }
       if (statusSurat) search.push(`status_surat=${statusSurat}`);
       if (sifatSurat) search.push(`is_important=${sifatSurat}`);
-      if (date.format('YYYY') !== '0000') {
-        const month = date.format('M');
-        const day   = date.format('D');
-        const year  = date.format('YYYY');
-        search.push(`tanggal_surat=${day}-${month}-${year}`);
+      if (searchItem) {
+        const reg = /^(0?[1-9]|[12][0-9]|3[01])[\-\-](0?[1-9]|1[012])[\-\-]\d{4}$/;
+        const testTanggal = reg.test(searchItem);
+        if (!testTanggal) {
+          Alert.alert('Format Tanggal Surat Salah');
+          return false;
+        }
+        search.push(`tanggal_surat=${searchItem}`);
       }
       if (search.length) search = search.join('&');
       else search = '';
@@ -149,7 +150,7 @@ const SuratMasukScreen = ({ navigation }) => {
     dropdownRefTipe.current.reset();
     dropdownRefStatus.current.reset();
     dropdownRefSifat.current.reset();
-    setDate(null);
+    setSearchItem('');
     handleApi();
   };
 
@@ -519,18 +520,13 @@ const SuratMasukScreen = ({ navigation }) => {
               }}
             />
             <Text style={{ color: 'black', fontWeight: 'bold' }}>Tanggal Surat:</Text>
-            <DatePicker
-              mode="date"
-              open={open}
-              date={date}
-              onConfirm={(date) => {
-                setOpen(false)
-                setDate(date)
-              }}
-              onCancel={() => {
-                setOpen(false)
-              }}
-            />
+            <TextInput
+                placeholder="Tanggal Surat"
+                autoCapitalize="none"
+                style={styles.inputSize}
+                onChangeText={text => setSearchItem(text)}
+                value={searchItem}
+              />
           </View>
           <TouchableOpacity
             style={styles.bottonSize}
