@@ -523,14 +523,14 @@ const SuratMasukScreen = ({ navigation }) => {
                 }
               }}
             />
-            <Text style={{ color: 'black', fontWeight: 'bold' }}>Tanggal Surat:</Text>
+            {/* <Text style={{ color: 'black', fontWeight: 'bold' }}>Tanggal Surat:</Text>
             <TextInput
               placeholder="Tanggal Surat"
               autoCapitalize="none"
               style={styles.inputSize}
               onChangeText={text => setSearchItem(text)}
               value={searchItem}
-            />
+            /> */}
             <Text style={{ color: 'black', fontWeight: 'bold' }}>Perihal Surat:</Text>
             <TextInput
               placeholder="Perihal"
