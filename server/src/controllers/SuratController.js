@@ -228,6 +228,7 @@ class SuratController {
                 is_important,
                 status_surat,
                 tanggal_surat,
+                perihal,
             } = req.query;
             if (!page || page < 1) page = 1;
             if (!resPerPage) resPerPage = 100;
@@ -266,6 +267,9 @@ class SuratController {
             }
             if (tanggal_surat) {
                 query.where.tanggal_surat = tanggal_surat;
+            }
+            if (perihal) {
+                query.where.perihal = { [Op.iLike]: `%${perihal}%` };
             }
             const numOfResult = await surats.count(query);
             query.limit = resPerPage;

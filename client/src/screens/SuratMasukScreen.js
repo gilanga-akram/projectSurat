@@ -52,6 +52,7 @@ const SuratMasukScreen = ({ navigation }) => {
   const [source, setSource] = useState({ uri: '' });
   const [modalTipeSurat, setModalTipeSurat] = useState('');
   const [searchItem, setSearchItem] = useState('');
+  const [searchPerihal, setSearchPerihal] = useState('');
 
   useEffect(() => {
     handleApi();
@@ -123,6 +124,7 @@ const SuratMasukScreen = ({ navigation }) => {
       }
       if (statusSurat) search.push(`status_surat=${statusSurat}`);
       if (sifatSurat) search.push(`is_important=${sifatSurat}`);
+      if (searchPerihal) search.push(`perihal=${searchPerihal}`);
       if (searchItem) {
         const reg = /^(0?[1-9]|[12][0-9]|3[01])[\-\-](0?[1-9]|1[012])[\-\-]\d{4}$/;
         const testTanggal = reg.test(searchItem);
@@ -151,6 +153,7 @@ const SuratMasukScreen = ({ navigation }) => {
     dropdownRefStatus.current.reset();
     dropdownRefSifat.current.reset();
     setSearchItem('');
+    setSearchPerihal('');
     handleApi();
   };
 
@@ -521,12 +524,20 @@ const SuratMasukScreen = ({ navigation }) => {
             />
             <Text style={{ color: 'black', fontWeight: 'bold' }}>Tanggal Surat:</Text>
             <TextInput
-                placeholder="Tanggal Surat"
-                autoCapitalize="none"
-                style={styles.inputSize}
-                onChangeText={text => setSearchItem(text)}
-                value={searchItem}
-              />
+              placeholder="Tanggal Surat"
+              autoCapitalize="none"
+              style={styles.inputSize}
+              onChangeText={text => setSearchItem(text)}
+              value={searchItem}
+            />
+            <Text style={{ color: 'black', fontWeight: 'bold' }}>Perihal Surat:</Text>
+            <TextInput
+              placeholder="Perihal"
+              autoCapitalize="none"
+              style={styles.inputSize}
+              onChangeText={text => setSearchPerihal(text)}
+              value={searchPerihal}
+            />
           </View>
           <TouchableOpacity
             style={styles.bottonSize}
