@@ -36,9 +36,9 @@ const SuratMasukScreen = ({ navigation }) => {
   const [suratModal, setSuratModal] = useState({});
   const [suratId, setSuratId] = useState(0);
   const [role, setRole] = useState();
-  const [tableHead, setTableHead] = useState(['Tanggal Surat', 'Tipe Surat', 'Status Surat', 'Sifat Surat', 'Action']);
+  const [tableHead, setTableHead] = useState(['Tanggal Surat', 'Tipe Surat', 'Status Surat', 'Sifat Surat', 'Perihal Surat', 'Action']);
   const [tableData, setTableData] = useState([]);
-  const [widthArr, setWidthArr] = useState([150, 150, 150, 150, 150]);
+  const [widthArr, setWidthArr] = useState([150, 150, 150, 150, 150, 150]);
   const [tipeSuratDropdown, setTipeSuratDropdown] = useState(['Magang', 'Cuti', 'Disposisi', 'Kerjasama']);
   const [tipeSurat, setTipeSurat] = useState('');
   const [statusSuratDropdown, setStatusSuratDropdown] = useState(['Dibuat', 'Disetujui', 'Ditolak']);
@@ -90,6 +90,7 @@ const SuratMasukScreen = ({ navigation }) => {
         toTitleCase(data.tipe_template_surat === 'ceklab' ? 'Disposisi' : data.tipe_template_surat),
         toTitleCase(data.status_surat),
         data.is_important ? 'Penting' : 'Tidak Penting',
+        data.perihal,
         <TouchableOpacity onPress={() => handleModal(data)}>
           <View style={styles.btn}>
             <Text style={styles.btnText}>Detail</Text>
